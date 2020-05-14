@@ -12,6 +12,7 @@ import pygame
 pygame.init()
 from lib import z_order
 from models.player import Player
+from models.cursor import Cursor
 # print('test')
 # print(z_order.Background)
 # print(z_order.Building)
@@ -39,6 +40,7 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
 player = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+cursor = Cursor()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -53,6 +55,8 @@ move_down = False
 
 # Run until the user asks to quit
 running = True
+pygame.mouse.set_visible(False)
+event_listeners = [player, cursor]
 while running:
     # Did the user click the window close button?
     for event in pygame.event.get():
@@ -63,10 +67,8 @@ while running:
           running = false
         if event.key == pygame.QUIT:
           running = false
-        else:
-          player.event_update(event)
-      elif event.type == KEYUP:
-        player.event_update(event)
+      # event_listeners.event_update(event)
+      map(lambda x: x.event_update(event), event_listeners)    
 
     # print("x,y:" + str(block_pos_x) + ' and ' + str(block_pos_y))
     # Fill the background with white
@@ -82,7 +84,10 @@ while running:
     pygame.draw.circle(screen, (0, 0, 255), (250, 250), 75)
     # screen.blit(surf, (block_pos_x, block_pos_y))
     player.update()
+    cursor.update()
+
     player.draw(screen)
+    cursor.draw(screen)
     
 
     # Flip the display
