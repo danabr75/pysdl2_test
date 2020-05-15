@@ -14,7 +14,7 @@ from pygame.locals import (
 )
 
 import pygame
-# from ..lib.z_order import Player
+from lib.z_order import ZOrder
 
 class Player(pygame.sprite.Sprite):
   SPEED = 0.1
@@ -30,6 +30,7 @@ class Player(pygame.sprite.Sprite):
     self.move_down = False
     self.x = x
     self.y = y
+    self.z = ZOrder.Player
 
   def event_update(self, event):
     if event.type == KEYDOWN:

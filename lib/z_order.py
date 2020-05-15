@@ -1,1 +1,2 @@
-Background, Building, Player, UI, Cursor = range(0, 5)
+class ZOrder():
+  Background, Building, Player, UI, Cursor = range(0, 5)
