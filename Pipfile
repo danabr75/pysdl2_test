@@ -18,6 +18,12 @@ python_full_version = '3.7.6'
 # pywinusb = { version = "*", os_name = "=='nt'", index="pypi"}
 # From shell: pip install pygame
 pygame = "2.0.0.dev3"
+# $ python3 -m pip install PyOpenGL PyOpenGL_accelerate
+# Installing collected packages: PyOpenGL, PyOpenGL-accelerate
+# Successfully installed PyOpenGL-3.1.5 PyOpenGL-accelerate-3.1.5
+# Should have been? pipenv install
+pyopengl = "*"
+pyopengl-accelerate = "*"
 
 [dev-packages]
 # nose = '*'
