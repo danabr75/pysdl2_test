@@ -1,162 +1,167 @@
 # pipenv shell
 # python main.py
 
+import sys
+import sdl2.ext
 
-# Simple pygame program
+WHITE = sdl2.ext.Color(255, 255, 255)
 
-# http://programarcadegames.com/index.php?chapter=example_code
+class SoftwareRenderer(sdl2.ext.SoftwareSpriteRenderSystem):
+  def __init__(self, window):
+    super(SoftwareRenderer, self).__init__(window)
 
+  def render(self, components):
+    sdl2.ext.fill(self.surface, sdl2.ext.Color(0, 0, 0))
+    super(SoftwareRenderer, self).render(components)
 
-# Import and initialize the pygame library
-import pygame
-pygame.init()
-from lib import z_order
-from models.player import Player
-from models.cursor import Cursor
-# print('test')
-# print(z_order.Background)
-# print(z_order.Building)
+class Player(sdl2.ext.Entity):
+  def __init__(self, world, sprite, posx=0, posy=0):
+    self.sprite = sprite
+    self.sprite.position = posx, posy
+    self.velocity = Velocity()
 
-# Set up the drawing window
+class Velocity(object):
+    def __init__(self):
+        super(Velocity, self).__init__()
+        self.vx = 0
+        self.vy = 0
 
-from OpenGL.GL import *
-from OpenGL.GLU import *
-
-from pygame.locals import (
-    K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
-    K_ESCAPE,
-    KEYDOWN,
-    KEYUP,
-    QUIT,
-    K_w,
-    K_a,
-    K_s,
-    K_d
-)
 class MainEngine():
-  DEFAULT_SCREEN_WIDTH = 800
-  DEFAULT_SCREEN_HEIGHT = 600
+  RESOURCES = sdl2.ext.Resources(__file__, "assets")
 
   def __init__(self):
-    self.screen_width  = self.DEFAULT_SCREEN_WIDTH
-    self.screen_height = self.DEFAULT_SCREEN_HEIGHT
-    # Needs to happen before objects are initted
+    sdl2.ext.init()
 
-    pygame.init()
-    windowSize = (self.screen_width, self.screen_height)
-    self.screen = pygame.display.set_mode(windowSize, pygame.DOUBLEBUF|pygame.OPENGL)
-    # void gluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
-    gluPerspective(60, (windowSize[0]/windowSize[1]), 0.1, 100.0)
-    # gluOrtho2D(60, (windowSize[0]/windowSize[1]), 0.1, 100.0)
-    glTranslatef(0.0, 0.0, -5)
-    self.cubeEdges = ((0,1),(0,3),(0,4),(1,2),(1,7),(2,5),(2,3),(3,6),(4,6),(4,7),(5,6),(5,7))
-    self.cubeVertices = ((1,1,1),(1,1,-1),(1,-1,-1),(1,-1,1),(-1,1,1),(-1,-1,-1),(-1,-1,1),(-1,1,-1))
+    self.window = sdl2.ext.Window("Hello World!", size=(920, 780))
+    
 
-    # self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-    self.player = Player(self.screen_width/2, self.screen_height/2)
-    self.cursor = Cursor()
-    self.running = True
-    pygame.mouse.set_visible(False)
-    self.event_listeners = {'in_game_state':[self.player, self.cursor], 'menu': [self.cursor]}
-    self.game_states = ['in_game_state', 'menu', 'options']
-    self.current_state = self.game_states[0]    
+    self.factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
+    self.sprite = self.factory.from_image(self.RESOURCES.get_path("test.png"))
+    self.processor = sdl2.ext.TestEventProcessor()
+    
+    self.world = sdl2.ext.World()
+    spriterenderer = SoftwareRenderer(self.window)
 
-  def wireCube():
-    glBegin(GL_LINES)
-    for cubeEdge in self.cubeEdges:
-      for cubeVertex in cubeEdge:
-        glVertex3fv(self.cubeVertices[cubeVertex])
-    glEnd()
+    # factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
+    self.sp_paddle1 = self.factory.from_color(WHITE, size=(20, 100))
+    self.sp_paddle2 = self.factory.from_color(WHITE, size=(20, 100))
+
+    self.player1 = Player(self.world, self.sp_paddle1, 0, 250)
+    self.player2 = Player(self.world, self.sp_paddle2, 780, 250)
+    self.sp_ball = self.factory.from_color(WHITE, size=(20, 20))
+
+    movement = MovementSystem(0, 0, 800, 600)
+    collision = CollisionSystem(0, 0, 800, 600)
+
+
+
+    self.ball = Ball(self.world, self.sp_ball, 390, 290)
+    self.ball.velocity.vx = -3
+    collision.ball = self.ball
+
+    self.world.add_system(movement)
+    self.world.add_system(collision)
+    self.world.add_system(spriterenderer)
+
 
   def main(self):
-    drawable_objects = {}
-    drawable_objects[self.player.z] = 'test'
-    while self.running:
-      if self.current_state == 'in_game_state':
-        for event in pygame.event.get():
-          if event.type == pygame.QUIT:
-            self.running = False
-          elif event.type == KEYDOWN:
-            if event.key == K_ESCAPE:
-              self.current_state = 'menu'
-            if event.key == pygame.QUIT:
-              self.running = false
-          for listener in self.event_listeners[self.current_state]:
-            listener.event_update(event)
-          # map(lambda x: x.event_update(event), event_listeners)
-          # cursor.event_update(event)
+    self.window.show()
+    # Image can't be seen when processor runs 
+    # self.processor.run(self.window)
+    # spriterenderer = self.factory.create_sprite_render_system(self.window)
+    # spriterenderer.render(self.sprite)
 
-        # print("x,y:" + str(block_pos_x) + ' and ' + str(block_pos_y))
-        # Fill the background with white
-        # self.screen.fill((255, 255, 255))
+    # sdl2.ext.init()
+    # window = sdl2.ext.Window("The Pong Game", size=(800, 600))
+    # window.show()
 
-        # # surf = pygame.Surface((50, 50))
-        # # surf.fill((0, 0, 0))
-        # # rect = surf.get_rect()
-        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+    running = True
+    while running:
+      events = sdl2.ext.get_events()
+      for event in events:
+        if event.type == sdl2.SDL_QUIT:
+          running = False
+          break
+        if event.type == sdl2.SDL_KEYDOWN:
+            if event.key.keysym.sym == sdl2.SDLK_UP:
+                self.player1.velocity.vy = -3
+            elif event.key.keysym.sym == sdl2.SDLK_DOWN:
+                self.player1.velocity.vy = 3
+        elif event.type == sdl2.SDL_KEYUP:
+            if event.key.keysym.sym in (sdl2.SDLK_UP, sdl2.SDLK_DOWN):
+                self.player1.velocity.vy = 0
 
+      sdl2.SDL_Delay(10)
+      self.world.process()
+      # self.window.refresh()
 
-        pygame.draw.circle(self.screen, (0, 0, 255), (250, 250), 75)
-        self.player.update()
-        self.cursor.update()
-
-        self.player.draw(self.screen)
-        self.cursor.draw(self.screen)
-        glRotatef(1, 1, 1, 1)
-        
-        glBegin(GL_LINES)
-        for cubeEdge in self.cubeEdges:
-          for cubeVertex in cubeEdge:
-            glVertex3fv(self.cubeVertices[cubeVertex])
-            # glVertex2f(self.cubeVertices[cubeVertex])
-        glEnd()
-
-        # Flip the display
-        pygame.display.flip()
-        # pygame.time.wait(10)
-
-
-      elif self.current_state == 'menu':
-        for event in pygame.event.get():
-          if event.type == pygame.QUIT:
-            self.running = False
-          elif event.type == KEYDOWN:
-            if event.key == K_ESCAPE:
-              self.current_state = 'in_game_state'
-            if event.key == pygame.QUIT:
-              self.running = false
-          for listener in self.event_listeners[self.current_state]:
-            listener.event_update(event)
-
-        # self.screen.fill((255, 255, 255))
-        # # UPDATE
-        # self.cursor.update()
-        # # DRAW
-        # self.cursor.draw(self.screen)
-        # wireCube()
-        # glRotatef(1, 1, 1, 1)
-        # glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-
-        # glBegin(GL_LINES)
-        # for cubeEdge in self.cubeEdges:
-        #   for cubeVertex in cubeEdge:
-        #     glVertex3fv(cubeVertices[cubeVertex])
-        # glEnd()
-
-        # # Flip the display
-        # pygame.display.flip()
-        # pygame.time.wait(10)
-    # END WHILE
     exit()
+    return 0
 
   def exit(self):
-    pygame.quit()
+    sdl2.ext.quit()
 
-  # Done! Time to quit.
-  # pygame.quit()
+
+class MovementSystem(sdl2.ext.Applicator):
+    def __init__(self, minx, miny, maxx, maxy):
+        super(MovementSystem, self).__init__()
+        self.componenttypes = Velocity, sdl2.ext.Sprite
+        self.minx = minx
+        self.miny = miny
+        self.maxx = maxx
+        self.maxy = maxy
+
+    def process(self, world, componentsets):
+        for velocity, sprite in componentsets:
+            swidth, sheight = sprite.size
+            sprite.x += velocity.vx
+            sprite.y += velocity.vy
+
+            sprite.x = max(self.minx, sprite.x)
+            sprite.y = max(self.miny, sprite.y)
+
+            pmaxx = sprite.x + swidth
+            pmaxy = sprite.y + sheight
+            if pmaxx > self.maxx:
+                sprite.x = self.maxx - swidth
+            if pmaxy > self.maxy:
+                sprite.y = self.maxy - sheight
+
+class Ball(sdl2.ext.Entity):
+    def __init__(self, world, sprite, posx=0, posy=0):
+        self.sprite = sprite
+        self.sprite.position = posx, posy
+        self.velocity = Velocity()
+
+class CollisionSystem(sdl2.ext.Applicator):
+    def __init__(self, minx, miny, maxx, maxy):
+        super(CollisionSystem, self).__init__()
+        self.componenttypes = Velocity, sdl2.ext.Sprite
+        self.ball = None
+        self.minx = minx
+        self.miny = miny
+        self.maxx = maxx
+        self.maxy = maxy
+
+    def _overlap(self, item):
+        pos, sprite = item
+        if sprite == self.ball.sprite:
+            return False
+
+        left, top, right, bottom = sprite.area
+        bleft, btop, bright, bbottom = self.ball.sprite.area
+
+        return (bleft < right and bright > left and
+                btop < bottom and bbottom > top)
+
+    def process(self, world, componentsets):
+        collitems = [comp for comp in componentsets if self._overlap(comp)]
+        if collitems:
+            self.ball.velocity.vx = -self.ball.velocity.vx
+
+
+
+
 
 if __name__ == "__main__":
   MainEngine().main()
