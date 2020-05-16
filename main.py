@@ -4,7 +4,10 @@
 import sys
 import sdl2.ext
 
-WHITE = sdl2.ext.Color(255, 255, 255)
+from lib.constants import *
+from models.world import World
+from models.ball import Ball
+from lib.velocity import Velocity
 
 class SoftwareRenderer(sdl2.ext.SoftwareSpriteRenderSystem):
   def __init__(self, window):
@@ -18,16 +21,9 @@ class Player(sdl2.ext.Entity):
   def __init__(self, world, sprite, posx=0, posy=0):
     self.sprite = sprite
     self.sprite.position = posx, posy
-    self.velocity = Velocity()
-
-class Velocity(object):
-    def __init__(self):
-        super(Velocity, self).__init__()
-        self.vx = 0
-        self.vy = 0
+    self.velocity = Velocity(1)
 
 class MainEngine():
-  RESOURCES = sdl2.ext.Resources(__file__, "assets")
 
   def __init__(self):
     sdl2.ext.init()
@@ -36,10 +32,11 @@ class MainEngine():
     
 
     self.factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
-    self.sprite = self.factory.from_image(self.RESOURCES.get_path("test.png"))
+    self.sprite = self.factory.from_image(RESOURCES.get_path("test.png"))
     self.processor = sdl2.ext.TestEventProcessor()
     
-    self.world = sdl2.ext.World()
+    self.world = World()
+
     spriterenderer = SoftwareRenderer(self.window)
 
     # factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
@@ -56,7 +53,7 @@ class MainEngine():
 
 
     self.ball = Ball(self.world, self.sp_ball, 390, 290)
-    self.ball.velocity.vx = -3
+    self.ball.velocity.vx = -3000
     collision.ball = self.ball
 
     self.world.add_system(movement)
@@ -103,6 +100,7 @@ class MainEngine():
 
 
 class MovementSystem(sdl2.ext.Applicator):
+
     def __init__(self, minx, miny, maxx, maxy):
         super(MovementSystem, self).__init__()
         self.componenttypes = Velocity, sdl2.ext.Sprite
@@ -114,8 +112,11 @@ class MovementSystem(sdl2.ext.Applicator):
     def process(self, world, componentsets):
         for velocity, sprite in componentsets:
             swidth, sheight = sprite.size
-            sprite.x += velocity.vx
-            sprite.y += velocity.vy
+
+            self.implement_drag(world, velocity)
+
+            sprite.x += round((velocity.vx) / 100)
+            sprite.y += round((velocity.vy) / 100)
 
             sprite.x = max(self.minx, sprite.x)
             sprite.y = max(self.miny, sprite.y)
@@ -127,11 +128,55 @@ class MovementSystem(sdl2.ext.Applicator):
             if pmaxy > self.maxy:
                 sprite.y = self.maxy - sheight
 
-class Ball(sdl2.ext.Entity):
-    def __init__(self, world, sprite, posx=0, posy=0):
-        self.sprite = sprite
-        self.sprite.position = posx, posy
-        self.velocity = Velocity()
+    def implement_drag(self, world, velocity):
+      if world.drag and world.drag >= 1 and velocity.mass > 0:
+        # HANDLE Y
+        if velocity.vy != 0:
+          velocity_y_positive = velocity.vy > 0
+
+          if velocity.vy > 0 and velocity.vy <= 1:
+            velocity_y_diff = 0
+            velocity.vy = 0
+          else:
+            velocity_y_diff = round((velocity.vx) / velocity.mass)
+            if velocity_y_positive and velocity_y_diff < 1:
+              velocity_y_diff = 1
+            elif not velocity_x_positive and velocity_y_diff > -1:
+              velocity_y_diff = -1
+
+
+          if (velocity_y_positive and velocity_y_diff < 0) or (not velocity_y_positive and velocity_y_diff > 0):
+            velocity_y_diff = 0
+
+          velocity.vy -= velocity_y_diff
+
+        # HANDLE X
+        if velocity.vx != 0:
+          velocity_x_positive = velocity.vx > 0
+
+          if velocity.vx > 0 and velocity.vx <= 1:
+            velocity_x_diff = 0
+            velocity.vx = 0
+          else:
+            velocity_x_diff = round((velocity.vx) / velocity.mass)
+            if velocity.debug:
+              print("velocity_x_diff = round(abs(velocity.vx) / velocity.mass)")
+              print(str(velocity_x_diff) + " = round((" + str(velocity.vx) + ") / " + str(velocity.mass) + ")")
+              print(str(velocity_x_diff) + " = round(" + str((velocity.vx) / velocity.mass) + ")")
+              print('new diff ' + str(velocity_x_diff))
+
+
+            if velocity_x_positive and velocity_x_diff < 1:
+              velocity_x_diff = 1
+            elif not velocity_x_positive and velocity_x_diff > -1:
+              velocity_x_diff = -1
+
+          if (velocity_x_positive and velocity_x_diff < 0) or (not velocity_x_positive and velocity_x_diff > 0):
+            velocity_x_diff = 0
+
+          velocity.vx -= velocity_x_diff
+
+
 
 class CollisionSystem(sdl2.ext.Applicator):
     def __init__(self, minx, miny, maxx, maxy):
