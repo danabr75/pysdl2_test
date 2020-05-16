@@ -5,3 +5,4 @@ class Velocity(object):
         self.vy = 0
         self.mass = mass
         self.debug = debug
+        self.movement = 0

@@ -138,7 +138,7 @@ class MovementSystem(sdl2.ext.Applicator):
             velocity_y_diff = 0
             velocity.vy = 0
           else:
-            velocity_y_diff = round((velocity.vx) / velocity.mass)
+            velocity_y_diff = round((velocity.vx) / (velocity.mass / world.drag))
             if velocity_y_positive and velocity_y_diff < 1:
               velocity_y_diff = 1
             elif not velocity_x_positive and velocity_y_diff > -1:
@@ -152,13 +152,16 @@ class MovementSystem(sdl2.ext.Applicator):
 
         # HANDLE X
         if velocity.vx != 0:
+          velocity.movement += 1
+          if velocity.debug:
+            print("MOVEMENT: " + str(velocity.movement))
           velocity_x_positive = velocity.vx > 0
 
           if velocity.vx > 0 and velocity.vx <= 1:
             velocity_x_diff = 0
             velocity.vx = 0
           else:
-            velocity_x_diff = round((velocity.vx) / velocity.mass)
+            velocity_x_diff = round((velocity.vx) / (velocity.mass / world.drag))
             if velocity.debug:
               print("velocity_x_diff = round(abs(velocity.vx) / velocity.mass)")
               print(str(velocity_x_diff) + " = round((" + str(velocity.vx) + ") / " + str(velocity.mass) + ")")
