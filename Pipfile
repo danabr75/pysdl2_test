@@ -10,20 +10,8 @@ name = 'pypi'
 python_full_version = '3.7.6'
 
 [packages]
-# requests = { extras = ['socks'] }
-# records = '>0.5.0'
-# django = { git = 'https://github.com/django/django.git', ref = '1.11.4', editable = true }
-# "e682b37" = {file = "https://github.com/divio/django-cms/archive/release/3.4.x.zip"}
-# "e1839a8" = {path = ".", editable = true}
-# pywinusb = { version = "*", os_name = "=='nt'", index="pypi"}
-# From shell: pip install pygame
-pygame = "2.0.0.dev3"
-# $ python3 -m pip install PyOpenGL PyOpenGL_accelerate
-# Installing collected packages: PyOpenGL, PyOpenGL-accelerate
-# Successfully installed PyOpenGL-3.1.5 PyOpenGL-accelerate-3.1.5
-# Should have been? pipenv install
-pyopengl = "*"
-pyopengl-accelerate = "*"
+# python -m pip install pysdl2
+
 
 [dev-packages]
 # nose = '*'

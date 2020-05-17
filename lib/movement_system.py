@@ -43,7 +43,7 @@ class MovementSystem(sdl2.ext.Applicator):
             velocity_y_diff = round((velocity.vx) / (velocity.mass / world.drag))
             if velocity_y_positive and velocity_y_diff < 1:
               velocity_y_diff = 1
-            elif not velocity_x_positive and velocity_y_diff > -1:
+            elif not velocity_y_positive and velocity_y_diff > -1:
               velocity_y_diff = -1
 
           if (velocity_y_positive and velocity_y_diff < 0) or (not velocity_y_positive and velocity_y_diff > 0):
