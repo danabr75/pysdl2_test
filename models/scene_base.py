@@ -1,3 +1,6 @@
+import sdl2
+import sdl2.ext
+
 class SceneBase(object):
     """Basic scene of the game.
  

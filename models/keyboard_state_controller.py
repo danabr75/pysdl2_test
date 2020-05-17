@@ -1,3 +1,7 @@
+import sdl2
+import sdl2.ext
+
+
 class KeyboardStateController:
     """A class that keeps track of keyboard modifiers and locks."""
  

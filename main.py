@@ -2,7 +2,10 @@
 # python main.py
 
 import sys
+import sdl2
 import sdl2.ext
+import ctypes
+import os
 
 from lib.constants import *
 from models.world import World
@@ -17,140 +20,192 @@ from lib.collision_system import CollisionSystem
 from models.keyboard_state_controller import KeyboardStateController
 from models.scene_base import SceneBase
 
-# import os
-# from util.time import Clock
+from lib.clock import Clock
 
 
 class MainEngine():
 
-  def __init__(self, opengl = False):
-    sdl2.ext.init()
-
-
-    if opengl:
-        # No hardware accelerated renderers available
-        flags = sdl2.SDL_WINDOW_OPENGL
-    else:
-        flags = sdl2.SDL_RENDERER_SOFTWARE
-
-    # self.window = sdl2.ext.Window("Hello World!", size=(920, 780))
-    self.width  = SCREEN_WIDTH
-    self.height = SCREEN_HEIGHT
-
-    self.window = sdl2.ext.Window("Tiles", size=(self.width, self.height), flags=flags)
-    # self.window = sdl2.ext.Window("Tiles", size=(self.width, self.height), flags=sdl2.SDL_WINDOW_BORDERLESS)
-
-    # Create a renderer that supports hardware-accelerated sprites.
-    self.renderer = sdl2.ext.Renderer(self.window)
-
-    # Create a sprite factory that allows us to create visible 2D elements
-    # easily.
-    self.texture_factory = sdl2.ext.SpriteFactory(sdl2.ext.TEXTURE, renderer=self.renderer)
-
-
-    # self.factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
-    # self.sprite = self.factory.from_image(RESOURCES.get_path("test.png"))
-    self.processor = sdl2.ext.TestEventProcessor()
-    
-    self.world = World()
-
-
-    # wminfo = SDL_SysWMinfo();
-    # SDL_GetVersion(wminfo.version);
-    # spriterenderer = SoftwareRenderer(self.window)
-    # sdl2.ext.SDL_SetWindowSize(self.window, self.width, self.height)
-    sdl2.SDL_SetWindowSize(self.window.window, self.width, self.height)
-    spriterenderer = self.texture_factory.create_sprite_render_system(self.window)
+    def __init__(self, opengl = False, width=None, height=None, cols=None, rows=None, tile_size=None,
+        limit_fps=None, window_color=None
+    ):
+        self.width = width or SCREEN_WIDTH
+        self.height = height or SCREEN_HEIGHT
+        self.tile_size = tile_size or TILE_SIZE
+        self.limit_fps = limit_fps or LIMIT_FPS
+        self.window_color = window_color or WINDOW_COLOR
  
+        # Number of tile_size-sized drawable columns and rows on screen
+        self.cols = self.width // self.tile_size
+        self.rows = self.height // self.tile_size
+ 
+        # Initialize with no scene
+        self.scene = None
 
-    # factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
-    # sp_paddle1 = self.factory.from_color(WHITE, size=(20, 100))
+        if opengl:
+            # No hardware accelerated renderers available
+            flags = sdl2.SDL_WINDOW_OPENGL
+        else:
+            flags = sdl2.SDL_RENDERER_SOFTWARE
 
-    # cursor_image = self.factory.from_color(GREEN, size=(20, 20))
+        self.window = sdl2.ext.Window("Tiles", size=(self.width, self.height), flags=flags)
 
-    # self.cursor = Cursor(self.world, cursor_image)
+        # Create a renderer that supports hardware-accelerated sprites.
+        self.renderer = sdl2.ext.Renderer(self.window)
+ 
+        # Create a sprite factory that allows us to create visible 2D elements
+        # easily.
+        self.factory = sdl2.ext.SpriteFactory(
+            sdl2.ext.TEXTURE, renderer=self.renderer)
+ 
+        # Creates a simple rendering system for the Window. The
+        # SpriteRenderSystem can draw Sprite objects on the window.
+        self.spriterenderer = self.factory.create_sprite_render_system(
+            self.window)
+ 
+        # By default, every Window is hidden, not shown on the screen right
+        # after creation. Thus we need to tell it to be shown now.
+        self.window.show()
+ 
+        # Enforce window raising just to be sure.
+        sdl2.SDL_RaiseWindow(self.window.window)
+ 
+        # Initialize the keyboard state controller.
+        # PySDL2/SDL2 shouldn't need this but the basic procedure for getting
+        # key mods and locks is not working for me atm.
+        # So I've implemented my own controller.
+        self.kb_state = KeyboardStateController()
+ 
+        # Initialize a mouse starting position. From here on the manager will
+        # be able to work on distances from previous positions.
+        self._get_mouse_state()
+ 
+        # Initialize a clock utility to help us control the framerate
+        self.clock = Clock()
+ 
+        # Make the Manager alive. This is used on the main loop.
+        self.alive = True
 
-    self.player1 = Player(self.world, self.texture_factory, 250, 250)
-    # self.player2 = Player(self.world, sp_paddle2, 780, 250)
-    # sp_ball = self.factory.from_color(WHITE, size=(20, 20))
+    def _get_mouse_state(self):
+        """Get the mouse state.
+ 
+        This is only required during initialization. Later on the mouse
+        position will be passed through events.
+        """
+        # This is an example of what PySDL2, below the hood, does for us.
+        # Here we create a ctypes int (i.e. a C type int)
+        x = ctypes.c_int(0)
+        y = ctypes.c_int(0)
+        # And pass it by reference to the SDL C function (i.e. pointers)
+        sdl2.mouse.SDL_GetMouseState(ctypes.byref(x), ctypes.byref(y))
+        # The variables were modified by SDL, but are still of C type
+        # So we need to get their values as python integers
+        self._mouse_x = x.value
+        self._mouse_y = y.value
+        # Now we hope we're never going to deal with this kind of stuff again
+        return self._mouse_x, self._mouse_y
+ 
+    def run(self):
+        """Main loop handling events and updates."""
+        while self.alive:
+            self.clock.tick(self.limit_fps)
+            self.on_event()
+            self.on_update()
+        return sdl2.ext.quit()
 
-    movement = MovementSystem(0, 0, 800, 600)
-    # collision = CollisionSystem(0, 0, 800, 600)
+    def on_update(self):
+        """Update the active scene."""
+        scene = self.scene
+        if self.alive:
+            # clear the window with its color
+            self.renderer.clear(self.window_color)
+            if scene:
+                # call the active scene's on_update
+                scene.on_update()
+            # present what we have to the screen
+            self.present()
+ 
+    def present(self):
+        """Flip the GPU buffer."""
+        sdl2.render.SDL_RenderPresent(self.spriterenderer.sdlrenderer)
+ 
+    def set_scene(self, scene=None, **kwargs):
+        """Set the scene.
+ 
+        Args:
+            scene (SceneBase): the scene to be initialized
+            kwargs: the arguments that should be passed to the scene
+ 
+        """
+        self.scene = scene(manager=self, **kwargs)
 
-    # ball = Ball(self.world, sp_ball, 390, 290)
-    # ball.velocity.vx = -3000
-    # collision.ball = bal
 
-    self.world.add_system(movement)
-    # self.world.add_system(collision)
-    self.world.add_system(spriterenderer)
-
-    self.event_listeners = {'in_game_state':[self.player1], 'menu': []}
-    self.game_states = ['in_game_state', 'menu', 'options']
-    self.current_state = self.game_states[0]
-
-    self.width = SCREEN_WIDTH
-    self.height = SCREEN_HEIGHT
-    self.tile_size = TILE_SIZE
-    self.limit_fps = LIMIT_FPS
-    self.window_color = WINDOW_COLOR
-
-    # Number of tile_size-sized drawable columns and rows on screen
-    self.cols = self.width
-    self.rows = self.height
-
-  def main(self):
-    self.window.show()
-    sdl2.SDL_RaiseWindow(self.window.window)
-
-    # self.kb_state = KeyboardStateController()
-    # self._get_mouse_state()
-    # self.clock = Clock()
-
-    # Image can't be seen when processor runs 
-    # self.processor.run(self.window)
-
-    running = True
-    while running:
-      events = sdl2.ext.get_events()
-      # GAME OPTIONS HERE
-      if self.current_state == 'in_game_state':
-        for event in events:
-          if event.type == sdl2.SDL_QUIT:
-            running = False
-            break
-          if event.type == sdl2.SDL_KEYDOWN:
-            if event.key == sdl2.SDLK_ESCAPE:
-              # self.current_state = 'menu'
-              running = False
-          elif event.type == sdl2.SDL_KEYUP:
-            if event.key.keysym.sym in (sdl2.SDLK_UP, sdl2.SDLK_DOWN):
-              self.player1.velocity.vy = 0
-          for listener in self.event_listeners[self.current_state]:
-            listener.event_update(event)
-      # MENU OPTIONS HERE
-      elif self.current_state == 'menu':
-        for event in events:
-          if event.type == sdl2.SDL_QUIT:
-            running = False
-            break
-          if event.type == sdl2.SDL_KEYDOWN:
-            if event.key == sdl2.SDLK_ESCAPE:
-              # self.current_state = 'in_game_state'
-              running = False
-          elif event.type == sdl2.SDL_KEYUP:
-            if event.key.keysym.sym in (sdl2.SDLK_UP, sdl2.SDLK_DOWN):
-              self.player1.velocity.vy = 0
-          for listener in self.event_listeners[self.current_state]:
-            listener.event_update(event)
-      # self.cursor.update()
-      # sdl2.SDL_Delay(10)
-      self.world.process()
-      # self.window.refresh()
-    print('EXIT ME')
-    self.exit()
-    return sdl2.ext.quit()
-
-  def exit(self):
-    sdl2.ext.quit()
-    return sdl2.ext.quit()
+    def on_event(self):
+        """Handle the events and pass them to the active scene."""
+        scene = self.scene
+ 
+        if scene is None:
+            return
+        for event in sdl2.ext.get_events():
+ 
+            # Exit events
+            if event.type == sdl2.SDL_QUIT:
+                self.alive = False
+                return
+ 
+            # Redraw in case the focus was lost and now regained
+            if event.type == sdl2.SDL_WINDOWEVENT_FOCUS_GAINED:
+                self.on_update()
+                continue
+ 
+            # on_mouse_motion, on_mouse_drag
+            if event.type == sdl2.SDL_MOUSEMOTION:
+                x = event.motion.x
+                y = event.motion.y
+                buttons = event.motion.state
+                self._mouse_x = x
+                self._mouse_y = y
+                dx = x - self._mouse_x
+                dy = y - self._mouse_y
+                if buttons & sdl2.SDL_BUTTON_LMASK:
+                    scene.on_mouse_drag(event, x, y, dx, dy, "LEFT")
+                elif buttons & sdl2.SDL_BUTTON_MMASK:
+                    scene.on_mouse_drag(event, x, y, dx, dy, "MIDDLE")
+                elif buttons & sdl2.SDL_BUTTON_RMASK:
+                    scene.on_mouse_drag(event, x, y, dx, dy, "RIGHT")
+                else:
+                    scene.on_mouse_motion(event, x, y, dx, dy)
+                continue
+            # on_mouse_press
+            elif event.type == sdl2.SDL_MOUSEBUTTONDOWN:
+                x = event.button.x
+                y = event.button.y
+ 
+                button_n = event.button.button
+                if button_n == sdl2.SDL_BUTTON_LEFT:
+                    button = "LEFT"
+                elif button_n == sdl2.SDL_BUTTON_RIGHT:
+                    button = "RIGHT"
+                elif button_n == sdl2.SDL_BUTTON_MIDDLE:
+                    button = "MIDDLE"
+ 
+                double = bool(event.button.clicks - 1)
+ 
+                scene.on_mouse_press(event, x, y, button, double)
+                continue
+            # on_mouse_scroll (wheel)
+            elif event.type == sdl2.SDL_MOUSEWHEEL:
+                offset_x = event.wheel.x
+                offset_y = event.wheel.y
+                scene.on_mouse_scroll(event, offset_x, offset_y)
+                continue
+ 
+            # for keyboard input, set the key symbol and keyboard modifiers
+            mod = self.kb_state.process(event)
+            sym = event.key.keysym.sym
+ 
+            # on_key_release
+            if event.type == sdl2.SDL_KEYUP:
+                scene.on_key_release(event, sym, mod)
+            # on_key_press
+            elif event.type == sdl2.SDL_KEYDOWN:
+                scene.on_key_press(event, sym, mod)

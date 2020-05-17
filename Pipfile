@@ -7,10 +7,11 @@ verify_ssl = true
 name = 'pypi'
 
 [requires]
-python_full_version = '3.7.6'
+python_full_version = '3.5.5'
 
 [packages]
 # python -m pip install pysdl2
+pysdl2 = "0.9.7"
 
 
 [dev-packages]
