@@ -3,7 +3,7 @@
 # pipenv shell
 # python run.py
 
-from main import MainEngine
+from manager import Manager
 from models.scene_base import SceneBase
 from models.rouge_like import RogueLike
 
@@ -12,6 +12,6 @@ from models.rouge_like import RogueLike
 
 if __name__ == '__main__':
     # example, with a borderless yet ugly green window
-    m = MainEngine()
+    m = Manager()
     m.set_scene(scene=RogueLike)
     m.run()

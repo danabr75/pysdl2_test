@@ -1,7 +1,12 @@
 import sdl2
 import sdl2.ext
+from lib.constants import *
 
-class SceneBase(object):
+from models.cursor import Cursor
+from models.player import Player
+from models.world import World
+
+class SceneBase(sdl2.ext.World):
     """Basic scene of the game.
  
     New Scenes should be subclasses of SceneBase.
@@ -22,8 +27,22 @@ class SceneBase(object):
         return scene
  
     def __init__(self, **kwargs):
+        super().__init__()
         """Initialization."""
-        pass
+        # pass
+
+        # fname = RESOURCES.get_path("cursor.png")
+        fname = RESOURCES.get_path("cursor.png")
+ 
+        # use the pysdl2 factory to create a sprite from an image
+        self.cursor_sprite = self.factory.from_image(fname)
+ 
+        # set it to a position to look better on our screenshot :)
+        self.cursor_sprite.position = (128, 128)
+
+        self.player = Player(self)
+
+        # self.cursor = Cursor()
  
     # properties
     @property
@@ -109,7 +128,8 @@ class SceneBase(object):
             mod (KeyboardStateController): the keyboard state for modifiers
                 and locks. See :class:KeyboardStateController
         """
-        pass
+        # pass
+        self.player.on_key_press(event, sym, mod)
  
     def on_key_release(self, event, sym, mod):
         """Called on keyboard input, when a key is **released**.
@@ -128,6 +148,7 @@ class SceneBase(object):
             mod (KeyboardStateController): the keyboard state for modifiers
                 and locks. See :class:KeyboardStateController
         """
+        self.player.on_key_release(event, sym, mod)
         if sym == sdl2.SDLK_ESCAPE:
             self.quit()
  
@@ -159,7 +180,11 @@ class SceneBase(object):
             dx (int): relative motion in the horizontal direction
             dy (int): relative motion in the vertical direction
         """
-        pass
+        # print("ON MOUSE MOTION")
+        # print(x,y,dx,dy)
+
+        self.cursor_sprite.position = (x, y)
+        # pass
  
     def on_mouse_press(self, event, x, y, button, double):
         """Called when mouse buttons are pressed.
@@ -193,5 +218,8 @@ class SceneBase(object):
  
     def on_update(self):
         """Graphical logic."""
-        pass
+        # pass
+        self.player.update()
+        self.manager.spriterenderer.render(sprites=self.cursor_sprite)
+        self.manager.spriterenderer.render(sprites=self.player.sprite)
  

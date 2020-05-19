@@ -12,7 +12,7 @@ from models.world import World
 from models.ball import Ball
 from lib.velocity import Velocity
 from models.player import Player
-from models.cursor import Cursor
+# from models.cursor import Cursor
 from lib.software_renderer import SoftwareRenderer
 from lib.movement_system import MovementSystem
 from lib.collision_system import CollisionSystem
@@ -23,9 +23,10 @@ from models.scene_base import SceneBase
 from lib.clock import Clock
 
 
-class MainEngine():
+class Manager():
 
-    def __init__(self, opengl = False, width=None, height=None, cols=None, rows=None, tile_size=None,
+    # OPENGL = False, makes it full screen.
+    def __init__(self, opengl = True, width=None, height=None, cols=None, rows=None, tile_size=None,
         limit_fps=None, window_color=None
     ):
         self.width = width or SCREEN_WIDTH
@@ -42,7 +43,7 @@ class MainEngine():
         self.scene = None
 
         if opengl:
-            # No hardware accelerated renderers available
+            # No hardware accelerated renderers available, on python 3.7
             flags = sdl2.SDL_WINDOW_OPENGL
         else:
             flags = sdl2.SDL_RENDERER_SOFTWARE
@@ -54,13 +55,11 @@ class MainEngine():
  
         # Create a sprite factory that allows us to create visible 2D elements
         # easily.
-        self.factory = sdl2.ext.SpriteFactory(
-            sdl2.ext.TEXTURE, renderer=self.renderer)
+        self.factory = sdl2.ext.SpriteFactory(sdl2.ext.TEXTURE, renderer=self.renderer)
  
         # Creates a simple rendering system for the Window. The
         # SpriteRenderSystem can draw Sprite objects on the window.
-        self.spriterenderer = self.factory.create_sprite_render_system(
-            self.window)
+        self.spriterenderer = self.factory.create_sprite_render_system(self.window)
  
         # By default, every Window is hidden, not shown on the screen right
         # after creation. Thus we need to tell it to be shown now.
