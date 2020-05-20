@@ -222,4 +222,6 @@ class SceneBase(sdl2.ext.World):
         self.player.update()
         self.manager.spriterenderer.render(sprites=self.cursor_sprite)
         self.manager.spriterenderer.render(sprites=self.player.sprite)
- 
+
+    def draw(self):
+        return [self.cursor_sprite, self.player.sprite]

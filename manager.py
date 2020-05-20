@@ -24,6 +24,7 @@ from lib.clock import Clock
 
 
 class Manager():
+    FPS = 60
 
     # OPENGL = False, makes it full screen.
     def __init__(self, opengl = True, width=None, height=None, cols=None, rows=None, tile_size=None,
@@ -49,7 +50,6 @@ class Manager():
             flags = sdl2.SDL_RENDERER_SOFTWARE
 
         self.window = sdl2.ext.Window("Tiles", size=(self.width, self.height), flags=flags)
-
         # Create a renderer that supports hardware-accelerated sprites.
         self.renderer = sdl2.ext.Renderer(self.window)
  
@@ -57,13 +57,17 @@ class Manager():
         # easily.
         self.factory = sdl2.ext.SpriteFactory(sdl2.ext.TEXTURE, renderer=self.renderer)
  
+        self.font = sdl2.ext.FontManager(font_path = RESOURCES.get_path("arial.ttf"), size = 14)
+        self.text = self.factory.from_text("Unisung Softworks",fontmanager=self.font)
+
         # Creates a simple rendering system for the Window. The
         # SpriteRenderSystem can draw Sprite objects on the window.
-        self.spriterenderer = self.factory.create_sprite_render_system(self.window)
  
         # By default, every Window is hidden, not shown on the screen right
         # after creation. Thus we need to tell it to be shown now.
         self.window.show()
+        # SpriteRenderSystem can draw Sprite objects on the window.
+        self.spriterenderer = self.factory.create_sprite_render_system(self.window)
  
         # Enforce window raising just to be sure.
         sdl2.SDL_RaiseWindow(self.window.window)
@@ -113,15 +117,36 @@ class Manager():
 
     def on_update(self):
         """Update the active scene."""
-        scene = self.scene
+
         if self.alive:
-            # clear the window with its color
             self.renderer.clear(self.window_color)
-            if scene:
-                # call the active scene's on_update
-                scene.on_update()
-            # present what we have to the screen
-            self.present()
+            # if self.scene:
+            #     self.scene.on_update()
+
+            self.renderer.copy(self.text, dstrect= (0,0,self.text.size[0],self.text.size[1]))
+            # print("test")
+            # print(self.scene.draw())
+            self.spriterenderer.render(sprites=self.scene.draw())
+            self.renderer.present()
+            sdl2.timer.SDL_Delay(12)  
+
+        # if self.alive:
+        #     # clear the window with its color
+        #     self.renderer.clear(self.window_color)
+        #     if self.scene:
+        #         # call the active scene's on_update
+        #         self.scene.on_update()
+
+        #     self.renderer.copy(self.text, dstrect= (0,0,self.text.size[0],self.text.size[1]))
+        #     # present what we have to the screen
+        #     self.renderer.present()
+        #     # self.window.refresh()
+        #     # https://pysdl2.readthedocs.io/en/latest/tutorial/pygamers.html#pygame-time
+        #     # SDL_Delay(1000//FPS - ((SDL_GetTicks()-starttime)))
+        #     # frameTime = sdl2.timer.SDL_GetTicks() - frameStart;
+        #     # if frameDelay > frameTime:
+        #     #     sdl2.timer.SDL_Delay(frameDelay - frameTime);
+        #     sdl2.timer.SDL_Delay(100)
  
     def present(self):
         """Flip the GPU buffer."""
