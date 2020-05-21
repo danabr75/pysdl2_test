@@ -40,9 +40,12 @@ class SceneBase(sdl2.ext.World):
         # set it to a position to look better on our screenshot :)
         self.cursor_sprite.position = (128, 128)
 
-        self.player = Player(self)
-
-        # self.cursor = Cursor()
+        player = Player(self)
+        cursor = Cursor(self)
+        self.drawable_elements  = [player, cursor]
+        self.updatable_elements = [player]
+        self.key_listeners      = [player]
+        self.mouse_listeners    = [cursor]
  
     # properties
     @property
@@ -129,7 +132,9 @@ class SceneBase(sdl2.ext.World):
                 and locks. See :class:KeyboardStateController
         """
         # pass
-        self.player.on_key_press(event, sym, mod)
+        # self.player.on_key_press(event, sym, mod)
+        for element in self.key_listeners:
+            element.on_key_press(event, sym, mod)
  
     def on_key_release(self, event, sym, mod):
         """Called on keyboard input, when a key is **released**.
@@ -148,7 +153,9 @@ class SceneBase(sdl2.ext.World):
             mod (KeyboardStateController): the keyboard state for modifiers
                 and locks. See :class:KeyboardStateController
         """
-        self.player.on_key_release(event, sym, mod)
+        # self.player.on_key_release(event, sym, mod)
+        for element in self.key_listeners:
+            element.on_key_release(event, sym, mod)
         if sym == sdl2.SDLK_ESCAPE:
             self.quit()
  
@@ -166,7 +173,10 @@ class SceneBase(sdl2.ext.World):
             button (str, "RIGHT"|"MIDDLE"|"LEFT"): string representing the
                 button pressed.
         """
-        pass
+        # pass
+        # self.cursor_sprite.position = (x, y)
+        for element in self.mouse_listeners:
+            element.on_mouse_drag(event, x, y, dx, dy, button)
  
     def on_mouse_motion(self, event, x, y, dx, dy):
         """Called when the mouse is moved.
@@ -183,7 +193,9 @@ class SceneBase(sdl2.ext.World):
         # print("ON MOUSE MOTION")
         # print(x,y,dx,dy)
 
-        self.cursor_sprite.position = (x, y)
+        # self.cursor_sprite.position = (x, y)
+        for element in self.mouse_listeners:
+            element.on_mouse_motion(event, x, y, dx, dy)
         # pass
  
     def on_mouse_press(self, event, x, y, button, double):
@@ -200,8 +212,14 @@ class SceneBase(sdl2.ext.World):
             double (bool, True|False): boolean indicating if the click was a
                 double click.
         """
-        pass
+        # pass
+        for element in self.mouse_listeners:
+            element.on_mouse_press(event, x, y, button, double)
  
+    def on_mouse_release(self, event, x, y, button, double):
+        for element in self.mouse_listeners:
+            element.on_mouse_release(event, x, y, button, double)
+
     def on_mouse_scroll(self, event, offset_x, offset_y):
         """Called when the mouse wheel is scrolled.
  
@@ -219,9 +237,18 @@ class SceneBase(sdl2.ext.World):
     def on_update(self):
         """Graphical logic."""
         # pass
-        self.player.update()
-        self.manager.spriterenderer.render(sprites=self.cursor_sprite)
-        self.manager.spriterenderer.render(sprites=self.player.sprite)
+        # self.player.update()
+        # self.manager.spriterenderer.render(sprites=self.cursor_sprite)
+        # self.manager.spriterenderer.render(sprites=self.player.sprite)
+        for element in self.updatable_elements:
+            element.on_update()
 
-    def draw(self):
-        return [self.cursor_sprite, self.player.sprite]
+    def on_draw(self):
+        drawable_list = []
+        for element in self.drawable_elements:
+            for inner_element in element.on_draw():
+                drawable_list.append(inner_element)
+        return drawable_list
+
+
+

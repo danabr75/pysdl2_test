@@ -28,7 +28,12 @@ class Player(sdl2.ext.Entity):
     # sdl2.ext.sprite.TextureSprite
     # sprite = factory.from_color(WHITE, size=(20, 100))
     self.scene = scene
+    # Depth HERE
+    # http://pysdl2.readthedocs.org/en/latest/modules/sdl2ext_sprite.html
+    # c.depth = -1
+    # Entity(world, c, 100, 100)
     self.sprite = scene.factory.from_image(RESOURCES.get_path("test.png"))
+
 
     self.velocity = Velocity(1)
     self.move_left = False
@@ -39,9 +44,12 @@ class Player(sdl2.ext.Entity):
     self.sprite.angle2 = 90
 
 
-  def update(self):
+  def on_update(self):
     # self.update_sprite()
     pass
+
+  def on_draw(self):
+    return [self.sprite]
 
   def on_key_press(self, event, sym, mod):
     if sym == sdl2.SDLK_w:

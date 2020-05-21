@@ -11,7 +11,7 @@ from lib.constants import *
 from models.world import World
 from models.ball import Ball
 from lib.velocity import Velocity
-from models.player import Player
+# from models.player import Player
 # from models.cursor import Cursor
 from lib.software_renderer import SoftwareRenderer
 from lib.movement_system import MovementSystem
@@ -117,16 +117,15 @@ class Manager():
 
     def on_update(self):
         """Update the active scene."""
-
         if self.alive:
             self.renderer.clear(self.window_color)
-            # if self.scene:
-            #     self.scene.on_update()
+            if self.scene:
+                self.scene.on_update()
 
             self.renderer.copy(self.text, dstrect= (0,0,self.text.size[0],self.text.size[1]))
             # print("test")
             # print(self.scene.draw())
-            self.spriterenderer.render(sprites=self.scene.draw())
+            self.spriterenderer.render(sprites=self.scene.on_draw())
             self.renderer.present()
             sdl2.timer.SDL_Delay(12)  
 
@@ -200,6 +199,21 @@ class Manager():
                     scene.on_mouse_motion(event, x, y, dx, dy)
                 continue
             # on_mouse_press
+            elif event.type == sdl2.SDL_MOUSEBUTTONUP:
+                x = event.button.x
+                y = event.button.y
+ 
+                button_n = event.button.button
+                if button_n == sdl2.SDL_BUTTON_LEFT:
+                    button = "LEFT"
+                elif button_n == sdl2.SDL_BUTTON_RIGHT:
+                    button = "RIGHT"
+                elif button_n == sdl2.SDL_BUTTON_MIDDLE:
+                    button = "MIDDLE"
+ 
+                double = bool(event.button.clicks - 1)
+ 
+                scene.on_mouse_release(event, x, y, button, double)
             elif event.type == sdl2.SDL_MOUSEBUTTONDOWN:
                 x = event.button.x
                 y = event.button.y
