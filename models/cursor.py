@@ -5,7 +5,8 @@ from models.sprite import Sprite
 
 class Cursor(object):
   def __init__(self, scene):
-    sdl2.SDL_ShowCursor(sdl2.SDL_DISABLE);
+    # Show Hide Cursor
+    # sdl2.SDL_ShowCursor(sdl2.SDL_DISABLE);
     super(Cursor, self).__init__()
     self.is_clicked = False
     _mouse_x, _mouse_y = self._get_mouse_state()
@@ -25,19 +26,19 @@ class Cursor(object):
       self.clicked_sprite.on_update(x, y)
 
   def on_mouse_press(self, event, x, y, button, double):
-      print("on_mouse_press")
+      # print("on_mouse_press")
       if self.is_clicked == False:
-          print("PRESS TRIGGERED")
+          # print("PRESS TRIGGERED")
           self.is_clicked = True
-          print(self.is_clicked)
+          # print(self.is_clicked)
           self.sprite = self.clicked_sprite
 
   def on_mouse_release(self, event, x, y, button, double):
-      print("on_mouse_release")
-      print(self.is_clicked)
+      # print("on_mouse_release")
+      # print(self.is_clicked)
       if self.is_clicked == True:
           self.is_clicked = False
-          print("SETTING NEW SPRITE")
+          # print("SETTING NEW SPRITE")
           self.sprite = self.unclicked_sprite
 
   def on_update(self):

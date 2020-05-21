@@ -161,6 +161,9 @@ class Manager():
         """
         self.scene = scene(manager=self, **kwargs)
 
+    def quit(self):
+      self.alive = False
+
 
     def on_event(self):
         """Handle the events and pass them to the active scene."""
@@ -168,12 +171,21 @@ class Manager():
  
         if scene is None:
             return
+
+        # events = []
+        # for test in sdl2.ext.get_events():
+        #     events.append(test.key.keysym.sym)
+        # if len(events) > 0:
+        #     print("BEING PRESSED")
+        #     print(events)
+
         for event in sdl2.ext.get_events():
- 
+            # print("EVENT LOOP HERE")
             # Exit events
-            if event.type == sdl2.SDL_QUIT:
-                self.alive = False
-                return
+            # if event.type == sdl2.SDL_QUIT:
+            #     # print("QWUITE HERE")
+            #     self.alive = False
+            #     return
  
             # Redraw in case the focus was lost and now regained
             if event.type == sdl2.SDL_WINDOWEVENT_FOCUS_GAINED:
@@ -225,6 +237,8 @@ class Manager():
                     button = "RIGHT"
                 elif button_n == sdl2.SDL_BUTTON_MIDDLE:
                     button = "MIDDLE"
+                else:
+                    button = 'UNDEFINED'
  
                 double = bool(event.button.clicks - 1)
  
@@ -241,8 +255,11 @@ class Manager():
             mod = self.kb_state.process(event)
             sym = event.key.keysym.sym
  
+            print("DID WE GET HERE???")
+
             # on_key_release
             if event.type == sdl2.SDL_KEYUP:
+                print("TEST")
                 scene.on_key_release(event, sym, mod)
             # on_key_press
             elif event.type == sdl2.SDL_KEYDOWN:

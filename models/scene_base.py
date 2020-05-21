@@ -115,7 +115,7 @@ class SceneBase(sdl2.ext.World):
     # other methods
     def quit(self):
         """Stop the manager main loop."""
-        self.manager.alive = False
+        self.manager.quit()
  
     # event methods
     def on_key_press(self, event, sym, mod):
@@ -137,6 +137,7 @@ class SceneBase(sdl2.ext.World):
             element.on_key_press(event, sym, mod)
  
     def on_key_release(self, event, sym, mod):
+        print("SCENE KEY RELEASE")
         """Called on keyboard input, when a key is **released**.
  
         By default if the Escape key is pressed the manager quits.
@@ -154,10 +155,20 @@ class SceneBase(sdl2.ext.World):
                 and locks. See :class:KeyboardStateController
         """
         # self.player.on_key_release(event, sym, mod)
-        for element in self.key_listeners:
-            element.on_key_release(event, sym, mod)
         if sym == sdl2.SDLK_ESCAPE:
+            print("QUITTING HERE")
             self.quit()
+        else:
+
+            for element in self.key_listeners:
+                element.on_key_release(event, sym, mod)
+
+        # print("GOT:")
+        # print(sym)
+        # print(sdl2.SDLK_ESCAPE)
+        # if sym == sdl2.SDLK_ESCAPE:
+        #     print("QUITTING HERE")
+        #     self.quit()
  
     def on_mouse_drag(self, event, x, y, dx, dy, button):
         """Called when mouse buttons are pressed and the mouse is dragged.

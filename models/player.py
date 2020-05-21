@@ -56,18 +56,23 @@ class Player(object):
 
   def on_key_press(self, event, sym, mod):
     if sym == sdl2.SDLK_w:
-      print("PLayer mvoe up")
-      self.y += 1
+      # print("PLayer W")
+      self.y -= 1
       # self.x += 1
       self.move_up = True
     if sym == sdl2.SDLK_s:
+      # print("PLayer S")
       self.move_down = True
-      self.y -= 1
+      self.y += 1
       # self.x -= 1
     if sym == sdl2.SDLK_d:
+      # print("PLayer D")
       self.move_right = True
+      self.x += 1
     if sym == sdl2.SDLK_a:
+      # print("PLayer A")
       self.move_left = True
+      self.x -= 1
 
   def on_key_release(self, event, sym, mod):
     if sym == sdl2.SDLK_w:
