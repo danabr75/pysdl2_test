@@ -6,7 +6,7 @@ from models.sprite import Sprite
 class Cursor(object):
   def __init__(self, scene):
     # Show Hide Cursor
-    # sdl2.SDL_ShowCursor(sdl2.SDL_DISABLE);
+    sdl2.SDL_ShowCursor(sdl2.SDL_DISABLE);
     super(Cursor, self).__init__()
     self.is_clicked = False
     _mouse_x, _mouse_y = self._get_mouse_state()

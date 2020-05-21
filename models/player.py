@@ -76,7 +76,7 @@ class Player(object):
 
   def on_key_release(self, event, sym, mod):
     if sym == sdl2.SDLK_w:
-      print("PLayer stop mvoe up")
+      # print("PLayer stop mvoe up")
       self.move_up = False
     if sym == sdl2.SDLK_s:
       self.move_down = False

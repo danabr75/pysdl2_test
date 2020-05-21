@@ -137,7 +137,7 @@ class SceneBase(sdl2.ext.World):
             element.on_key_press(event, sym, mod)
  
     def on_key_release(self, event, sym, mod):
-        print("SCENE KEY RELEASE")
+        # print("SCENE KEY RELEASE")
         """Called on keyboard input, when a key is **released**.
  
         By default if the Escape key is pressed the manager quits.
@@ -156,7 +156,7 @@ class SceneBase(sdl2.ext.World):
         """
         # self.player.on_key_release(event, sym, mod)
         if sym == sdl2.SDLK_ESCAPE:
-            print("QUITTING HERE")
+            # print("QUITTING HERE")
             self.quit()
         else:
 
