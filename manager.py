@@ -164,6 +164,13 @@ class Manager():
     def quit(self):
       self.alive = False
 
+    def get_keyboard_state(self):
+        """ Returns a list with the current SDL keyboard state,
+        which is updated on SDL_PumpEvents. """
+        numkeys = ctypes.c_int()
+        keystate = sdl2.keyboard.SDL_GetKeyboardState(ctypes.byref(numkeys))
+        ptr_t = ctypes.POINTER(ctypes.c_uint8 * numkeys.value)        
+        return ctypes.cast(keystate, ptr_t)[0]
 
     def on_event(self):
         """Handle the events and pass them to the active scene."""
@@ -178,6 +185,18 @@ class Manager():
         # if len(events) > 0:
         #     print("BEING PRESSED")
         #     print(events)
+
+        # events = []
+        # test2 = ctypes.c_int(8)
+        # for test in sdl2.SDL_GetKeyboardState(test2):
+        #     # print(test)
+        #     events.append(test)
+        # if len(events) > 0:
+        #     print("BEING PRESSED")
+        #     print(events)
+        keystatus = self.get_keyboard_state()
+        if keystatus[sdl2.SDL_SCANCODE_W]:
+          print("the w key was pressed")
 
         for event in sdl2.ext.get_events():
             # print("EVENT LOOP HERE")
