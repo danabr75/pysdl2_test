@@ -1,8 +1,9 @@
 import sdl2.ext
 from lib.velocity import Velocity
 from lib.constants import *
+from models.sprite import Sprite
 
-class Player(sdl2.ext.Entity):
+class Player(object):
 
   # def __new__(cls, scene):
   #   player = super().__new__(cls, scene)
@@ -12,7 +13,7 @@ class Player(sdl2.ext.Entity):
   #   return player
 
   def __init__(self, scene, posx=128, posy=128):
-    super(Player, self).__init__()
+    # super(Player, self).__init__()
     # sdl2.ext.TextureSprite
     # https://pysdl2.readthedocs.io/en/latest/modules/sdl2ext_sprite.html
     # test_sprite = sdl2.ext.TextureSprite()
@@ -32,7 +33,10 @@ class Player(sdl2.ext.Entity):
     # http://pysdl2.readthedocs.org/en/latest/modules/sdl2ext_sprite.html
     # c.depth = -1
     # Entity(world, c, 100, 100)
-    self.sprite = scene.factory.from_image(RESOURCES.get_path("test.png"))
+    self.x = posx
+    self.y = posy
+    # self.sprite = scene.factory.from_image(RESOURCES.get_path("test.png"))
+    self.sprite = Sprite(scene, 'test.png', self.x, self.y)
 
 
     self.velocity = Velocity(1)
@@ -40,26 +44,25 @@ class Player(sdl2.ext.Entity):
     self.move_right = False
     self.move_up = False
     self.move_down = False
-    self.sprite.angle = 90
-    self.sprite.angle2 = 90
 
 
   def on_update(self):
     # self.update_sprite()
-    pass
+    self.sprite.on_update(self.x, self.y)
+    # pass
 
   def on_draw(self):
-    return [self.sprite]
+    return [self.sprite.on_draw()]
 
   def on_key_press(self, event, sym, mod):
     if sym == sdl2.SDLK_w:
       print("PLayer mvoe up")
-      self.sprite.y += 1
+      self.y += 1
       # self.x += 1
       self.move_up = True
     if sym == sdl2.SDLK_s:
       self.move_down = True
-      self.sprite.y -= 1
+      self.y -= 1
       # self.x -= 1
     if sym == sdl2.SDLK_d:
       self.move_right = True

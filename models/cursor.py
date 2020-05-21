@@ -1,41 +1,50 @@
 import ctypes
 import sdl2.ext
 from lib.constants import *
+from models.sprite import Sprite
 
-class Cursor(sdl2.ext.Entity):
+class Cursor(object):
   def __init__(self, scene):
+    sdl2.SDL_ShowCursor(sdl2.SDL_DISABLE);
     super(Cursor, self).__init__()
     self.is_clicked = False
     _mouse_x, _mouse_y = self._get_mouse_state()
 
-    # self.unclicked_sprite = scene.factory.from_image(RESOURCES.get_path("cursor.png"))
-    # self.clicked_sprite = scene.factory.from_image(RESOURCES.get_path("cursor_clicked.png"))
-    self.sprite = scene.factory.from_image(RESOURCES.get_path("cursor.png"))
-    self.sprite.position = _mouse_x, _mouse_y
+    self.unclicked_sprite = Sprite(scene, 'cursor.png', _mouse_x, _mouse_y)
+    self.clicked_sprite = Sprite(scene, 'cursor_clicked.png', _mouse_x, _mouse_y)
+    self.sprite = self.unclicked_sprite
 
   def on_mouse_drag(self, event, x, y, dx, dy, button):
-      self.sprite.position = (x, y)
+      # self.sprite.position = (x, y)
+      self.unclicked_sprite.on_update(x, y)
+      self.clicked_sprite.on_update(x, y)
 
   def on_mouse_motion(self, event, x, y, dx, dy):
-      self.sprite.position = (x, y)
+      # self.sprite.position = (x, y)
+      self.unclicked_sprite.on_update(x, y)
+      self.clicked_sprite.on_update(x, y)
 
   def on_mouse_press(self, event, x, y, button, double):
-      pass
+      print("on_mouse_press")
       if self.is_clicked == False:
-          self.is_clicked == True
+          print("PRESS TRIGGERED")
+          self.is_clicked = True
+          print(self.is_clicked)
           self.sprite = self.clicked_sprite
 
   def on_mouse_release(self, event, x, y, button, double):
-      pass
+      print("on_mouse_release")
+      print(self.is_clicked)
       if self.is_clicked == True:
-          self.is_clicked == False
+          self.is_clicked = False
+          print("SETTING NEW SPRITE")
           self.sprite = self.unclicked_sprite
 
   def on_update(self):
     pass
 
   def on_draw(self):
-    return [self.sprite]
+    return [self.sprite.on_draw()]
 
   def _get_mouse_state(self):
       """Get the mouse state.
