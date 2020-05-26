@@ -4,9 +4,6 @@
 import os
 
 # WINDOWS INSTALLATION
-# INSTALL THE FOLLOWING TOOLS
-# PyInstaller: https://pyinstaller.readthedocs.io/en/stable/requirements.html#windows
-# https://sites.google.com/site/pydatalog/python/pip-for-windows
 # Windows requires the DLLs from this src: https://pysdl2.readthedocs.io/en/latest/install.html
 # https://www.libsdl.org/projects/SDL_image/
 # PySDL2 also offers support for the following SDL-related libraries:
@@ -15,10 +12,24 @@ import os
 # SDL2_mixer (http://www.libsdl.org/projects/SDL_mixer/)
 # SDL2_ttf (http://www.libsdl.org/projects/SDL_ttf/)
 # SDL2_gfx (http://www.ferzkopp.net/Software/SDL_gfx-2.0/)
+#
 # ALSO NEED SDL2: src: https://www.libsdl.org/download-2.0.php
 #   Also injected into C:\Windows\System32
 # SDL2-2.0.12-win32-x64
+# 
+# pyinstaller --add-data="lib;lib" --add-data="models;models" run.py
+# dist\run\run.exe
+# https://mborgerson.com/creating-an-executable-from-a-python-script/
+# ValueError: invalid path 'C:\projects\pysdl2_test-master\dist\run\lib\constants.pyc'
 
+
+# pyinstaller -F --add-data="lib;lib" --add-data="models;models" run.py
+# dist\run.exe
+# ValueError: invalid path 'C:\Users\benrd\AppData\Local\Temp\_MEI470202\lib\constants.pyc'
+
+# pyinstaller --add-data="lib;lib" --add-data="models;models" run.py
+# dist\run\run.exe
+# ValueError: invalid path 'C:\Users\benrd\AppData\Local\Temp\_MEI470202\lib\constants.pyc'
 
 import sys
 import sdl2
