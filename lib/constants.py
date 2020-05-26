@@ -9,13 +9,13 @@ import os
 # could replace __file__
 
 # in windows, this was still under lib, had to move assets under lib...
-data_folder = Path(__file__ + "/../assets")
+data_folder = Path(str(Path(__file__).parents[1]) + "/assets")
 # print( Path(os.getcwd() + "/../assets") )
 
 WHITE = sdl2.ext.Color(255, 255, 255)
 GREEN = sdl2.ext.Color(0, 255, 0)
 # RESOURCES = sdl2.ext.Resources(__file__, "../assets" )
-# RESOURCES = sdl2.ext.Resources(__file__, "..\\assets"  Path(__file__).parents[0] )
+# RESOURCES = sdl2.ext.Resources(__file__, "..\\assets"  Path(__file__).parents[1] )
 RESOURCES = sdl2.ext.Resources(str(data_folder))
 
 TILE_SIZE = 32
