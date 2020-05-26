@@ -1,11 +1,29 @@
 # pipenv shell
 # python main.py
 
+import os
+
+# WINDOWS INSTALLATION
+# INSTALL THE FOLLOWING TOOLS
+# PyInstaller: https://pyinstaller.readthedocs.io/en/stable/requirements.html#windows
+# https://sites.google.com/site/pydatalog/python/pip-for-windows
+# Windows requires the DLLs from this src: https://pysdl2.readthedocs.io/en/latest/install.html
+# https://www.libsdl.org/projects/SDL_image/
+# PySDL2 also offers support for the following SDL-related libraries:
+# CAN BE INJECTED INTO C:\Windows\System32, to be picked up.
+# SDL2_image (http://www.libsdl.org/projects/SDL_image/)
+# SDL2_mixer (http://www.libsdl.org/projects/SDL_mixer/)
+# SDL2_ttf (http://www.libsdl.org/projects/SDL_ttf/)
+# SDL2_gfx (http://www.ferzkopp.net/Software/SDL_gfx-2.0/)
+# ALSO NEED SDL2: src: https://www.libsdl.org/download-2.0.php
+#   Also injected into C:\Windows\System32
+# SDL2-2.0.12-win32-x64
+
+
 import sys
 import sdl2
 import sdl2.ext
 import ctypes
-import os
 
 from lib.constants import *
 from models.world import World
