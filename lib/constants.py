@@ -9,6 +9,7 @@ import os
 # could replace __file__
 
 # in windows, this was still under lib, had to move assets under lib...
+#   now fixed with the following.
 data_folder = Path(str(Path(__file__).parents[1]) + "/assets")
 # print( Path(os.getcwd() + "/../assets") )
 
