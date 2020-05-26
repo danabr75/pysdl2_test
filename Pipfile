@@ -12,6 +12,9 @@ python_full_version = '3.5.5'
 [packages]
 # python -m pip install pysdl2
 pysdl2 = "0.9.7"
+# python -m pip install pyinstaller
+pyinstaller = "3.6"
+
 
 
 [dev-packages]
