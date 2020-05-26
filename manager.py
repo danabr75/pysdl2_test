@@ -27,9 +27,11 @@ import os
 # dist\run.exe
 # ValueError: invalid path 'C:\Users\benrd\AppData\Local\Temp\_MEI470202\lib\constants.pyc'
 
-# pyinstaller --add-data="lib;lib" --add-data="models;models" run.py
+
+# Add compiled versions of python files. `python -m compileall .` and move them alongside their original files.
+# Also had issues with constants.py. Need to fix asset pathing.
+# pyinstaller --add-data="lib;lib" --add-data="models;models" --add-data="assets;assets" run.py
 # dist\run\run.exe
-# ValueError: invalid path 'C:\Users\benrd\AppData\Local\Temp\_MEI470202\lib\constants.pyc'
 
 import sys
 import sdl2
@@ -86,8 +88,8 @@ class Manager():
         # easily.
         self.factory = sdl2.ext.SpriteFactory(sdl2.ext.TEXTURE, renderer=self.renderer)
  
-        self.font = sdl2.ext.FontManager(font_path = RESOURCES.get_path("arial.ttf"), size = 14)
-        self.text = self.factory.from_text("Unisung Softworks",fontmanager=self.font)
+        # self.font = sdl2.ext.FontManager(font_path = RESOURCES.get_path("arial.ttf"), size = 14)
+        # self.text = self.factory.from_text("Unisung Softworks",fontmanager=self.font)
 
         # Creates a simple rendering system for the Window. The
         # SpriteRenderSystem can draw Sprite objects on the window.
@@ -151,7 +153,7 @@ class Manager():
             if self.scene:
                 self.scene.on_update()
 
-            self.renderer.copy(self.text, dstrect= (0,0,self.text.size[0],self.text.size[1]))
+            # self.renderer.copy(self.text, dstrect= (0,0,self.text.size[0],self.text.size[1]))
             # print("test")
             # print(self.scene.draw())
             self.spriterenderer.render(sprites=self.scene.on_draw())
