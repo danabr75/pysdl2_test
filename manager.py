@@ -14,6 +14,8 @@ if platform.system() == 'Windows':
         # set PYSDL2_DLL_PATH=str(Path(VENDOR_FOLDER + "/windows/32/grouped_dlls"))
     else:
         raise Exception("INVALID SYSTEM ARCHITECTURE: " + platform.architecture()[0])
+else:
+    print("Running using local SDL2 libaries")
 
 # WINDOWS INSTALLATION
 # Windows requires the DLLs from this src: https://pysdl2.readthedocs.io/en/latest/install.html
