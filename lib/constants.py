@@ -10,14 +10,16 @@ import os
 
 # in windows, this was still under lib, had to move assets under lib...
 #   now fixed with the following.
-data_folder = Path(str(Path(__file__).parents[1]) + "/assets")
+ROOT_FOLDER = str(Path(__file__).parents[1])
+ASSETS_FOLDER = str(Path(ROOT_FOLDER + "/assets"))
+VENDOR_FOLDER = str(Path(ROOT_FOLDER + "/vendor_lib"))
 # print( Path(os.getcwd() + "/../assets") )
 
 WHITE = sdl2.ext.Color(255, 255, 255)
 GREEN = sdl2.ext.Color(0, 255, 0)
 # RESOURCES = sdl2.ext.Resources(__file__, "../assets" )
 # RESOURCES = sdl2.ext.Resources(__file__, "..\\assets"  Path(__file__).parents[1] )
-RESOURCES = sdl2.ext.Resources(str(data_folder))
+RESOURCES = sdl2.ext.Resources(ASSETS_FOLDER)
 
 TILE_SIZE = 32
 SCREEN_WIDTH = 1024

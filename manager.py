@@ -1,7 +1,17 @@
 # pipenv shell
 # python main.py
 
+from lib.constants import *
 import os
+import platform
+
+if platform.system() == 'Windows':
+    if platform.architecture()[0] == '64bit':
+        set PYSDL2_DLL_PATH=str(Path(VENDOR_FOLDER + "/windows/64/grouped_dlls"))
+    elif platform.architecture()[0] == '32bit':
+        set PYSDL2_DLL_PATH=str(Path(VENDOR_FOLDER + "/windows/32/grouped_dlls"))
+    else:
+        raise Exception("INVALID SYSTEM ARCHITECTURE: " + platform.architecture()[0])
 
 # WINDOWS INSTALLATION
 # Windows requires the DLLs from this src: https://pysdl2.readthedocs.io/en/latest/install.html
@@ -30,7 +40,8 @@ import os
 
 # Add compiled versions of python files. `python -m compileall .` and move them alongside their original files.
 # Also had issues with constants.py. Need to fix asset pathing.
-# pyinstaller --add-data="lib;lib" --add-data="models;models" --add-data="assets;assets" run.py
+#   - Might be fixed
+# pyinstaller --windowed --add-data="lib;lib" --add-data="models;models" --add-data="assets;assets" run.py
 # dist\run\run.exe
 
 import sys
@@ -38,7 +49,6 @@ import sdl2
 import sdl2.ext
 import ctypes
 
-from lib.constants import *
 from models.world import World
 from models.ball import Ball
 from lib.velocity import Velocity
