@@ -7,9 +7,11 @@ import platform
 
 if platform.system() == 'Windows':
     if platform.architecture()[0] == '64bit':
-        set PYSDL2_DLL_PATH=str(Path(VENDOR_FOLDER + "/windows/64/grouped_dlls"))
+        os.environ["PYSDL2_DLL_PATH"] = str(Path(VENDOR_FOLDER + "/windows/64/grouped_dlls"))
+        # set PYSDL2_DLL_PATH=str(Path(VENDOR_FOLDER + "/windows/64/grouped_dlls"))
     elif platform.architecture()[0] == '32bit':
-        set PYSDL2_DLL_PATH=str(Path(VENDOR_FOLDER + "/windows/32/grouped_dlls"))
+        os.environ["PYSDL2_DLL_PATH"] = str(Path(VENDOR_FOLDER + "/windows/32/grouped_dlls"))
+        # set PYSDL2_DLL_PATH=str(Path(VENDOR_FOLDER + "/windows/32/grouped_dlls"))
     else:
         raise Exception("INVALID SYSTEM ARCHITECTURE: " + platform.architecture()[0])
 
