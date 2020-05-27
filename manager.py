@@ -1,21 +1,29 @@
 # pipenv shell
 # python main.py
 
-from lib.constants import *
+
 import os
 import platform
+from pathlib import Path
+print("SDL2 Detection")
 
+root_folder = str(Path(__file__).parents[0])
+vendor_folder = str(Path(root_folder + "/vendor_lib"))
 if platform.system() == 'Windows':
     if platform.architecture()[0] == '64bit':
-        os.environ["PYSDL2_DLL_PATH"] = str(Path(VENDOR_FOLDER + "/windows/64/grouped_dlls"))
+        os.environ["PYSDL2_DLL_PATH"] = str(Path(vendor_folder + "/windows/64/grouped_dlls"))
+        print(os.getenv("PYSDL2_DLL_PATH"))
         # set PYSDL2_DLL_PATH=str(Path(VENDOR_FOLDER + "/windows/64/grouped_dlls"))
     elif platform.architecture()[0] == '32bit':
-        os.environ["PYSDL2_DLL_PATH"] = str(Path(VENDOR_FOLDER + "/windows/32/grouped_dlls"))
+        os.environ["PYSDL2_DLL_PATH"] = str(Path(vendor_folder + "/windows/32/grouped_dlls"))
+        print(os.getenv("PYSDL2_DLL_PATH"))
         # set PYSDL2_DLL_PATH=str(Path(VENDOR_FOLDER + "/windows/32/grouped_dlls"))
     else:
         raise Exception("INVALID SYSTEM ARCHITECTURE: " + platform.architecture()[0])
 else:
     print("Running using local SDL2 libaries")
+
+from lib.constants import *
 
 # WINDOWS INSTALLATION
 # Windows requires the DLLs from this src: https://pysdl2.readthedocs.io/en/latest/install.html
@@ -47,6 +55,11 @@ else:
 #   - Might be fixed
 # pyinstaller --windowed --add-data="lib;lib" --add-data="models;models" --add-data="assets;assets" --add-data="vendor_lib;vendor_lib" run.py
 # dist\run\run.exe
+
+# DEBUG: without windowed
+# pyinstaller --add-data="lib;lib" --add-data="models;models" --add-data="assets;assets" --add-data="vendor_lib;vendor_lib" run.py
+# dist\run\run.exe
+
 
 import sys
 import sdl2
