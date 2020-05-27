@@ -45,7 +45,7 @@ else:
 # Add compiled versions of python files. `python -m compileall .` and move them alongside their original files.
 # Also had issues with constants.py. Need to fix asset pathing.
 #   - Might be fixed
-# pyinstaller --windowed --add-data="lib;lib" --add-data="models;models" --add-data="assets;assets" run.py
+# pyinstaller --windowed --add-data="lib;lib" --add-data="models;models" --add-data="assets;assets" --add-data="vendor_lib;vendor_lib" run.py
 # dist\run\run.exe
 
 import sys
