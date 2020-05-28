@@ -54,33 +54,67 @@ class Player(object):
   def on_draw(self):
     return [self.sprite.on_draw()]
 
-  def on_key_press(self, event, sym, mod):
-    if sym == sdl2.SDLK_w:
-      # print("PLayer W")
+  # event methods
+  def key_status(self, keystatus):
+    if keystatus[sdl2.SDL_SCANCODE_W] and keystatus[sdl2.SDL_SCANCODE_S]:
+      self.move_up   = False
+      self.move_down = False
+    elif keystatus[sdl2.SDL_SCANCODE_W]:
       self.y -= 1
-      # self.x += 1
-      self.move_up = True
-    if sym == sdl2.SDLK_s:
-      # print("PLayer S")
+      self.move_up   = True
+      self.move_down = False
+    elif keystatus[sdl2.SDL_SCANCODE_S]:
+      self.move_up   = False
       self.move_down = True
       self.y += 1
-      # self.x -= 1
-    if sym == sdl2.SDLK_d:
-      # print("PLayer D")
+    else:
+      self.move_up   = False
+      self.move_down = False
+
+    if keystatus[sdl2.SDL_SCANCODE_D] and keystatus[sdl2.SDL_SCANCODE_A]:
+      self.move_left  = False
+      self.move_right = False
+    elif keystatus[sdl2.SDL_SCANCODE_D]:
+      self.move_left  = False
       self.move_right = True
       self.x += 1
-    if sym == sdl2.SDLK_a:
-      # print("PLayer A")
-      self.move_left = True
+    elif keystatus[sdl2.SDL_SCANCODE_A]:
+      self.move_left  = True
+      self.move_right = False
       self.x -= 1
+    else:
+      self.move_left  = False
+      self.move_right = False
+
+  def on_key_press(self, event, sym, mod):
+    pass
+    # if sym == sdl2.SDLK_w:
+    #   # print("PLayer W")
+    #   self.y -= 1
+    #   # self.x += 1
+    #   self.move_up = True
+    # if sym == sdl2.SDLK_s:
+    #   # print("PLayer S")
+    #   self.move_down = True
+    #   self.y += 1
+    #   # self.x -= 1
+    # if sym == sdl2.SDLK_d:
+    #   # print("PLayer D")
+    #   self.move_right = True
+    #   self.x += 1
+    # if sym == sdl2.SDLK_a:
+    #   # print("PLayer A")
+    #   self.move_left = True
+    #   self.x -= 1
 
   def on_key_release(self, event, sym, mod):
-    if sym == sdl2.SDLK_w:
-      # print("PLayer stop mvoe up")
-      self.move_up = False
-    if sym == sdl2.SDLK_s:
-      self.move_down = False
-    if sym == sdl2.SDLK_d:
-      self.move_right = False
-    if sym == sdl2.SDLK_a:
-      self.move_left = False
+    pass
+    # if sym == sdl2.SDLK_w:
+    #   # print("PLayer stop mvoe up")
+    #   self.move_up = False
+    # if sym == sdl2.SDLK_s:
+    #   self.move_down = False
+    # if sym == sdl2.SDLK_d:
+    #   self.move_right = False
+    # if sym == sdl2.SDLK_a:
+    #   self.move_left = False

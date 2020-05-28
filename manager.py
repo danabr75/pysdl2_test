@@ -253,8 +253,10 @@ class Manager():
         #     print("BEING PRESSED")
         #     print(events)
         keystatus = self.get_keyboard_state()
-        if keystatus[sdl2.SDL_SCANCODE_W]:
-          print("the w key was pressed")
+        scene.key_status(keystatus)
+        # if keystatus[sdl2.SDL_SCANCODE_W]:
+        #   print("the w key was pressed")
+
 
         for event in sdl2.ext.get_events():
             # print("EVENT LOOP HERE")
@@ -330,8 +332,6 @@ class Manager():
             # for keyboard input, set the key symbol and keyboard modifiers
             mod = self.kb_state.process(event)
             sym = event.key.keysym.sym
- 
-            # print("DID WE GET HERE???")
 
             # on_key_release
             if event.type == sdl2.SDL_KEYUP:

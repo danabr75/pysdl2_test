@@ -118,6 +118,11 @@ class SceneBase(sdl2.ext.World):
         self.manager.quit()
  
     # event methods
+    def key_status(self, keystatus):
+        for element in self.key_listeners:
+            element.key_status(keystatus)
+
+    # event methods
     def on_key_press(self, event, sym, mod):
         """Called on keyboard input, when a key is **held down**.
  
