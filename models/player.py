@@ -2,6 +2,7 @@ import sdl2.ext
 from lib.velocity import Velocity
 from lib.constants import *
 from models.sprite import Sprite
+import math
 
 class Player(object):
 
@@ -36,7 +37,7 @@ class Player(object):
     self.x = posx
     self.y = posy
     # self.sprite = scene.factory.from_image(RESOURCES.get_path("test.png"))
-    self.sprite = Sprite(scene, 'test.png', self.x, self.y)
+    self.sprite = Sprite(scene, 'ship.png', self.x, self.y)
 
 
     self.velocity = Velocity(1)
@@ -48,23 +49,38 @@ class Player(object):
 
     self.controls_enabled = True
     self.rotation_speed = 100
+    self.speed = 10
     self.angle = 0
 
   def rotate_clockwise(self):
-    if self.controls_enabled:
-      increment = self.rotation_speed# * @fps_scaler
-      if self.angle - increment <= 0:
-        self.angle = (self.angle - increment) + MAX_ROTATIONAL_ANGLE
-      else:
-        self.angle -= increment
-
-  def rotate_counterclockwise(self):
     if self.controls_enabled:
       increment = self.rotation_speed #* @fps_scaler
       if self.angle + increment >= MAX_ROTATIONAL_ANGLE:
         self.angle = (self.angle + increment) - MAX_ROTATIONAL_ANGLE
       else:
         self.angle += increment
+
+  def rotate_counterclockwise(self):
+    if self.controls_enabled:
+      increment = self.rotation_speed# * @fps_scaler
+      if self.angle - increment <= 0:
+        self.angle = (self.angle - increment) + MAX_ROTATIONAL_ANGLE
+      else:
+        self.angle -= increment        
+
+  def move_forward(self):
+    self.movement(self.speed, self.angle / 100)
+
+  def move_backward(self):
+    self.movement(-self.speed, self.angle / 100)
+
+  def movement(self, speed, angle):
+    base_speed = speed #* @height_scale * @fps_scaler
+    step = (math.pi/180 * (angle - 90))
+
+    self.x = int(math.cos(step) * base_speed + self.x)
+    self.y = int(math.sin(step) * base_speed + self.y)
+
 
   def on_update(self):
     # self.update_sprite()
@@ -81,13 +97,14 @@ class Player(object):
       self.move_up   = False
       self.move_down = False
     elif keystatus[sdl2.SDL_SCANCODE_W]:
-      self.y -= 1
+      # self.y -= 1
+      self.move_forward()
       self.move_up   = True
       self.move_down = False
     elif keystatus[sdl2.SDL_SCANCODE_S]:
       self.move_up   = False
       self.move_down = True
-      self.y += 1
+      self.move_backward()
     else:
       self.move_up   = False
       self.move_down = False
@@ -99,12 +116,12 @@ class Player(object):
       self.rotate_clockwise()
       self.move_left  = False
       self.move_right = True
-      self.x += 1
+      # self.x += 1
     elif keystatus[sdl2.SDL_SCANCODE_A]:
       self.rotate_counterclockwise()
       self.move_left  = True
       self.move_right = False
-      self.x -= 1
+      # self.x -= 1
     else:
       self.move_left  = False
       self.move_right = False

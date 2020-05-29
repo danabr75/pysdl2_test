@@ -2,6 +2,7 @@ import sdl2
 import sdl2.ext
 from sdl2 import rect, render
 from sdl2.ext.compat import isiterable
+from lib.constants import *
 
 class TextureRenderer(sdl2.ext.TextureSpriteRenderSystem):
     def __init__(self, target):
@@ -23,6 +24,8 @@ class TextureRenderer(sdl2.ext.TextureSpriteRenderSystem):
                 r.x = x + sp.x
                 r.y = y + sp.y
                 r.w, r.h = sp.size
+                r.w = int(r.w / DEFAULT_IMAGE_SCALE)
+                r.h = int(r.h / DEFAULT_IMAGE_SCALE)
                 if rcopy(renderer, sp.texture, None, r, sp.angle, None, render.SDL_FLIP_NONE) == -1:
                     raise SDLError()
         else:
