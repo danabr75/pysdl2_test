@@ -64,6 +64,13 @@ from lib.constants import *
 import sys
 import sdl2
 import sdl2.ext
+
+# src: https://github.com/ShadowApex/pysdl2-example/blob/master/physics.py
+import sdl2.sdlgfx
+from sdl2 import rect, render
+from sdl2.ext.compat import isiterable
+
+
 import ctypes
 
 from models.world import World
@@ -74,11 +81,13 @@ from lib.velocity import Velocity
 from lib.software_renderer import SoftwareRenderer
 from lib.movement_system import MovementSystem
 from lib.collision_system import CollisionSystem
+from lib.texture_renderer import TextureRenderer
 
 from models.keyboard_state_controller import KeyboardStateController
 from models.scene_base import SceneBase
 
 from lib.clock import Clock
+import time
 
 
 class Manager():
@@ -109,6 +118,7 @@ class Manager():
 
         self.window = sdl2.ext.Window("Tiles", size=(self.width, self.height), flags=flags)
         # Create a renderer that supports hardware-accelerated sprites.
+        # AKA texture_renderer
         self.renderer = sdl2.ext.Renderer(self.window)
  
         # Create a sprite factory that allows us to create visible 2D elements
@@ -125,7 +135,11 @@ class Manager():
         # after creation. Thus we need to tell it to be shown now.
         self.window.show()
         # SpriteRenderSystem can draw Sprite objects on the window.
-        self.spriterenderer = self.factory.create_sprite_render_system(self.window)
+        # TextureSpriteRenderSystem uses SDL_RenderCopy by default, but you can change it to use SDL_RenderCopyEx
+        # Using the TextureSpriteRenderSystem drastically increased the framerate.
+        # self.spriterenderer = self.factory.create_sprite_render_system(self.window)
+        # Switching over to new renderer for sprite rotation.
+        self.spriterenderer = TextureRenderer(self.renderer)
  
         # Enforce window raising just to be sure.
         sdl2.SDL_RaiseWindow(self.window.window)
@@ -166,11 +180,24 @@ class Manager():
         return self._mouse_x, self._mouse_y
  
     def run(self):
+        # Calculate our framerate.
+        time_new = time.time()
+        time_old = time.time()
+        time_track = []
         """Main loop handling events and updates."""
         while self.alive:
+            time_elapsed = time_new - time_old
+            time_track.append(time_elapsed)
+            time_old = time_new
+            time_new = time.time()
             self.clock.tick(self.limit_fps)
             self.on_event()
             self.on_update()
+            if len(time_track) == 60:
+                average = sum(time_track) / len(time_track)
+                print("FPS:", int(1/average))
+                time_track = []
+
         return sdl2.ext.quit()
 
     def on_update(self):
@@ -185,7 +212,8 @@ class Manager():
             # print(self.scene.draw())
             self.spriterenderer.render(sprites=self.scene.on_draw())
             self.renderer.present()
-            sdl2.timer.SDL_Delay(12)  
+            # Appears to no longer be necessary.
+            # sdl2.timer.SDL_Delay(12)
 
         # if self.alive:
         #     # clear the window with its color

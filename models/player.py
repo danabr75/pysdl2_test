@@ -46,6 +46,26 @@ class Player(object):
     self.move_down = False
 
 
+    self.controls_enabled = True
+    self.rotation_speed = 10
+    self.angle = 0
+
+  def rotate_clockwise(self):
+    if self.controls_enabled:
+      increment = self.rotation_speed# * @fps_scaler
+      if self.angle - increment <= 0:
+        self.angle = (self.angle - increment) + MAX_ROTATIONAL_ANGLE
+      else:
+        self.angle -= increment
+
+  def rotate_counterclockwise(self):
+    if self.controls_enabled:
+      increment = self.rotation_speed #* @fps_scaler
+      if self.angle + increment >= MAX_ROTATIONAL_ANGLE:
+        self.angle = (self.angle + increment) - MAX_ROTATIONAL_ANGLE
+      else:
+        self.angle += increment
+
   def on_update(self):
     # self.update_sprite()
     self.sprite.on_update(self.x, self.y)
