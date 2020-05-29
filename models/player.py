@@ -47,7 +47,7 @@ class Player(object):
 
 
     self.controls_enabled = True
-    self.rotation_speed = 10
+    self.rotation_speed = 100
     self.angle = 0
 
   def rotate_clockwise(self):
@@ -68,7 +68,8 @@ class Player(object):
 
   def on_update(self):
     # self.update_sprite()
-    self.sprite.on_update(self.x, self.y)
+    self.sprite.on_update(self.x, self.y, (self.angle / 100))
+    # self.sprite.angle
     # pass
 
   def on_draw(self):
@@ -95,10 +96,12 @@ class Player(object):
       self.move_left  = False
       self.move_right = False
     elif keystatus[sdl2.SDL_SCANCODE_D]:
+      self.rotate_clockwise()
       self.move_left  = False
       self.move_right = True
       self.x += 1
     elif keystatus[sdl2.SDL_SCANCODE_A]:
+      self.rotate_counterclockwise()
       self.move_left  = True
       self.move_right = False
       self.x -= 1
