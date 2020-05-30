@@ -21,7 +21,7 @@ class Sprite(sdl2.ext.Entity):
 
   def on_update(self, x, y, angle = None):
     width, height = self.sprite.size
-    self.sprite.position = (x - width // 2, y - height // 2)
+    self.sprite.position = ( round(x - width // 2), round(y - height // 2))
     if angle:
         self.sprite.angle = angle
     # self.sprite.position = (x - self.sprite.x, y - self.sprite.y)

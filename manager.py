@@ -99,16 +99,16 @@ class Manager():
     ):
         self.width = width or SCREEN_WIDTH
         self.height = height or SCREEN_HEIGHT
-        self.tile_size = tile_size or TILE_SIZE
         self.limit_fps = limit_fps or LIMIT_FPS
+        print("FPS LIMIT: " + str(self.limit_fps))
         self.window_color = window_color or WINDOW_COLOR
  
-        # Number of tile_size-sized drawable columns and rows on screen
-        self.cols = self.width // self.tile_size
-        self.rows = self.height // self.tile_size
- 
+
         # Initialize with no scene
         self.scene = None
+
+        # self.show_fps = True
+        self.show_fps = False
 
         if opengl:
             # No hardware accelerated renderers available, on python 3.7
@@ -181,22 +181,25 @@ class Manager():
  
     def run(self):
         # Calculate our framerate.
-        time_new = time.time()
-        time_old = time.time()
-        time_track = []
+        if self.show_fps:
+            time_new = time.time()
+            time_old = time.time()
+            time_track = []
         """Main loop handling events and updates."""
         while self.alive:
-            time_elapsed = time_new - time_old
-            time_track.append(time_elapsed)
-            time_old = time_new
-            time_new = time.time()
+            if self.show_fps:
+                time_elapsed = time_new - time_old
+                time_track.append(time_elapsed)
+                time_old = time_new
+                time_new = time.time()
             self.clock.tick(self.limit_fps)
             self.on_event()
             self.on_update()
-            if len(time_track) == 60:
-                average = sum(time_track) / len(time_track)
-                print("FPS:", int(1/average))
-                time_track = []
+            if self.show_fps:
+                if len(time_track) == 60:
+                    average = sum(time_track) / len(time_track)
+                    print("FPS:", int(1/average))
+                    time_track = []
 
         return sdl2.ext.quit()
 

@@ -4,7 +4,9 @@ from lib.constants import *
 
 from models.cursor import Cursor
 from models.player import Player
+from models.camera_pov import CameraPOV
 from models.world import World
+from models.background import Background
 
 class SceneBase(sdl2.ext.World):
     """Basic scene of the game.
@@ -42,8 +44,12 @@ class SceneBase(sdl2.ext.World):
 
         player = Player(self)
         cursor = Cursor(self)
-        self.drawable_elements  = [player, cursor]
-        self.updatable_elements = [player]
+        self.camera = CameraPOV(player)
+        self.background = Background(self, self.manager.width, self.manager.height)
+
+
+        self.drawable_elements  = [player, cursor, self.background]
+        self.updatable_elements = [player, self.camera, self.background]
         self.key_listeners      = [player]
         self.mouse_listeners    = [cursor]
  

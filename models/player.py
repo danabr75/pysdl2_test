@@ -13,7 +13,7 @@ class Player(object):
   #   # player.update_sprite()
   #   return player
 
-  def __init__(self, scene, posx=128, posy=128):
+  def __init__(self, scene, x=128, y=128):
     # super(Player, self).__init__()
     # sdl2.ext.TextureSprite
     # https://pysdl2.readthedocs.io/en/latest/modules/sdl2ext_sprite.html
@@ -34,8 +34,8 @@ class Player(object):
     # http://pysdl2.readthedocs.org/en/latest/modules/sdl2ext_sprite.html
     # c.depth = -1
     # Entity(world, c, 100, 100)
-    self.x = posx
-    self.y = posy
+    self.x = x
+    self.y = y
     # self.sprite = scene.factory.from_image(RESOURCES.get_path("test.png"))
     self.sprite = Sprite(scene, 'ship.png', self.x, self.y)
 
@@ -48,8 +48,8 @@ class Player(object):
 
 
     self.controls_enabled = True
-    self.rotation_speed = 100
-    self.speed = 10
+    self.rotation_speed = 150
+    self.speed = 3
     self.angle = 0
 
   def rotate_clockwise(self):
@@ -72,14 +72,21 @@ class Player(object):
     self.movement(self.speed, self.angle / 100)
 
   def move_backward(self):
-    self.movement(-self.speed, self.angle / 100)
+    # pass
+    self.movement(self.speed / -3, self.angle / 100)
 
   def movement(self, speed, angle):
     base_speed = speed #* @height_scale * @fps_scaler
+    # print("ANGLE: " + str(angle))
     step = (math.pi/180 * (angle - 90))
-
-    self.x = int(math.cos(step) * base_speed + self.x)
-    self.y = int(math.sin(step) * base_speed + self.y)
+    # print("STEP: " + str(step))
+    # print("OLD X, OLD Y: " + str([self.x, self.y]))
+    # testx = (math.cos(step) * base_speed + self.x)
+    # testy = (math.sin(step) * base_speed + self.y)
+    self.x = round(math.cos(step) * base_speed + self.x)
+    self.y = round(math.sin(step) * base_speed + self.y)
+    # print("NEW X, OLD Y: " + str([self.x, self.y]))
+    # print("POS X, POS Y: " + str([testx, testy]))
 
 
   def on_update(self):

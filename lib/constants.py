@@ -13,6 +13,7 @@ import os
 ROOT_FOLDER = str(Path(__file__).parents[1])
 ASSETS_FOLDER = str(Path(ROOT_FOLDER + "/assets"))
 VENDOR_FOLDER = str(Path(ROOT_FOLDER + "/vendor_lib"))
+MAPS_FOLDER = str(Path(ROOT_FOLDER + "/maps"))
 # print( Path(os.getcwd() + "/../assets") )
 
 WHITE = sdl2.ext.Color(255, 255, 255)
@@ -21,7 +22,7 @@ GREEN = sdl2.ext.Color(0, 255, 0)
 # RESOURCES = sdl2.ext.Resources(__file__, "..\\assets"  Path(__file__).parents[1] )
 RESOURCES = sdl2.ext.Resources(ASSETS_FOLDER)
 
-TILE_SIZE = 32
+
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
 
@@ -31,3 +32,9 @@ WINDOW_COLOR = (0, 0, 0, 255)
 MAX_ROTATIONAL_ANGLE = 36000
 
 DEFAULT_IMAGE_SCALE = 3
+
+# BACKGROUND
+VISIBLE_MAP_TILE_WIDTH  = 6
+VISIBLE_MAP_TILE_HEIGHT = 6
+EXTRA_MAP_TILE_HEIGHT   = 4
+EXTRA_MAP_TILE_WIDTH    = 4
