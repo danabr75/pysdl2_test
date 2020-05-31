@@ -6,6 +6,7 @@ from models.cursor import Cursor
 from models.player import Player
 from models.camera_pov import CameraPOV
 from models.world import World
+from models.text import Text
 from models.background import Background
 
 class SceneBase(sdl2.ext.World):
@@ -47,11 +48,16 @@ class SceneBase(sdl2.ext.World):
         self.camera = CameraPOV(player)
         self.background = Background(self, self.manager.width, self.manager.height)
 
+        self.logo_text = Text(self, "TEXT DRAWABLE")
+
 
         self.drawable_elements  = [player, cursor, self.background]
         self.updatable_elements = [player, self.camera, self.background]
         self.key_listeners      = [player]
         self.mouse_listeners    = [cursor]
+
+        self.texts = [self.logo_text]
+        self.drawable_text_elements  = [player, self.background]
  
     # properties
     @property
@@ -266,6 +272,14 @@ class SceneBase(sdl2.ext.World):
             element.on_update()
 
     def on_draw(self):
+        # drawable_list = []
+        # for element in self.drawable_elements:
+        #     drawable_list = element.on_draw()
+        #     if drawable_list:
+        #         for inner_element in drawable_list:
+        #             if inner_element:
+        #                 drawable_list.append(inner_element)
+        # return drawable_list
         drawable_list = []
         for element in self.drawable_elements:
             for inner_element in element.on_draw():
@@ -273,4 +287,15 @@ class SceneBase(sdl2.ext.World):
         return drawable_list
 
 
-
+    def on_draw_text(self):
+        drawable_list = []
+        for element in self.texts:
+            drawable_list.append(element.on_draw_text())
+        for element in self.drawable_text_elements:
+            element_drawable_list = element.on_draw_text()
+            if element_drawable_list:
+                for inner_element in element_drawable_list:
+                    if (inner_element):
+                        drawable_list.append(inner_element)
+        return drawable_list
+ 

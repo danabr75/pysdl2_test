@@ -96,6 +96,8 @@ class Background(object):
 
         w_counter += 1
       h_counter += 1
-
+      
+  def on_draw_text(self):
+    pass
 
 

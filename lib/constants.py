@@ -38,3 +38,5 @@ VISIBLE_MAP_TILE_WIDTH  = 6
 VISIBLE_MAP_TILE_HEIGHT = 6
 EXTRA_MAP_TILE_HEIGHT   = 4
 EXTRA_MAP_TILE_WIDTH    = 4
+
+ARIAL_FONT = sdl2.ext.FontManager(font_path = RESOURCES.get_path("arial.ttf"), size = 14)

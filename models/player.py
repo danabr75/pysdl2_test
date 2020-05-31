@@ -2,6 +2,7 @@ import sdl2.ext
 from lib.velocity import Velocity
 from lib.constants import *
 from models.sprite import Sprite
+from models.text import Text
 import math
 
 class Player(object):
@@ -52,6 +53,8 @@ class Player(object):
     self.speed = 3
     self.angle = 0
 
+    self.player_text = Text(scene, "player")
+
   def rotate_clockwise(self):
     if self.controls_enabled:
       increment = self.rotation_speed #* @fps_scaler
@@ -92,6 +95,7 @@ class Player(object):
   def on_update(self):
     # self.update_sprite()
     self.sprite.on_update(self.x, self.y, (self.angle / 100))
+    self.player_text.on_update(self.x, self.y)
     # self.sprite.angle
     # pass
 
@@ -165,3 +169,7 @@ class Player(object):
     #   self.move_right = False
     # if sym == sdl2.SDLK_a:
     #   self.move_left = False
+
+  def on_draw_text(self):
+    return [self.player_text]
+    # pass

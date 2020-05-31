@@ -107,8 +107,8 @@ class Manager():
         # Initialize with no scene
         self.scene = None
 
-        # self.show_fps = True
-        self.show_fps = False
+        self.show_fps = True
+        # self.show_fps = False
 
         if opengl:
             # No hardware accelerated renderers available, on python 3.7
@@ -125,8 +125,7 @@ class Manager():
         # easily.
         self.factory = sdl2.ext.SpriteFactory(sdl2.ext.TEXTURE, renderer=self.renderer)
  
-        # self.font = sdl2.ext.FontManager(font_path = RESOURCES.get_path("arial.ttf"), size = 14)
-        # self.text = self.factory.from_text("Unisung Softworks",fontmanager=self.font)
+        # self.text = self.factory.from_text("Unisung Softworks",fontmanager= ARIAL_FONT)
 
         # Creates a simple rendering system for the Window. The
         # SpriteRenderSystem can draw Sprite objects on the window.
@@ -207,13 +206,13 @@ class Manager():
         """Update the active scene."""
         if self.alive:
             self.renderer.clear(self.window_color)
-            if self.scene:
-                self.scene.on_update()
+            self.scene.on_update()
 
-            # self.renderer.copy(self.text, dstrect= (0,0,self.text.size[0],self.text.size[1]))
+            for text in self.scene.on_draw_text():
+                self.renderer.copy(text.value, dstrect = (text.x, text.y, text.value.size[0], text.value.size[1]))
             # print("test")
             # print(self.scene.draw())
-            self.spriterenderer.render(sprites=self.scene.on_draw())
+            self.spriterenderer.render(sprites = self.scene.on_draw())
             self.renderer.present()
             # Appears to no longer be necessary.
             # sdl2.timer.SDL_Delay(12)
