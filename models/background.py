@@ -30,7 +30,7 @@ class Background(object):
     print("self.map_data with size: " + str([self.map_width, self.map_height]))
     for h in range(0, self.map_height):
         for w in range(0, self.map_width):
-            self.map_data[h][w]['map_tile'] = MapTile(self.scene, map_data['terrains'][self.map_data[h][w]['terrain_index']], 0, 0)
+            self.map_data[h][w]['map_tile'] = MapTile(self.scene, map_data['terrains'][self.map_data[h][w]['terrain_index']], 0, 0, h, w)
 
     self.map_height = len(self.map_data)
     self.map_width = len(self.map_data[0])
@@ -52,6 +52,7 @@ class Background(object):
     self.visible_map_height_half = int(self.visible_map_height / 2)
     self.visible_map_tiles_matrix = [[None for i in range(self.visible_map_width)] for j in range(self.visible_map_height)]
     self.init_visible_map_tiles_matrix()
+    self.texts = []
     # self.sprite = Sprite(scene, 'ship.png', self.x, self.y)
   def init_visible_map_tiles_matrix(self):
       # self.camera.map_x
@@ -98,6 +99,12 @@ class Background(object):
       h_counter += 1
       
   def on_draw_text(self):
-    pass
+    drawable_list = []
+    for element in self.texts:
+      drawable_list.append(element.on_draw_text())
+    for height_row in self.visible_map_tiles_matrix:
+      for cell in height_row:
+        drawable_list.append(cell.on_draw_text())
+    return drawable_list
 
 
