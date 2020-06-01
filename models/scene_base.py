@@ -48,7 +48,7 @@ class SceneBase(sdl2.ext.World):
         self.camera = CameraPOV(player)
         self.background = Background(self, self.manager.width, self.manager.height)
 
-        self.logo_text = Text(self, "TEXT DRAWABLE")
+        self.logo_text = Text(self, "TEXT DRAWABLE", 0, 0, Z_ORDER.UI)
 
 
         self.drawable_elements  = [player, cursor, self.background]
@@ -280,22 +280,45 @@ class SceneBase(sdl2.ext.World):
         #             if inner_element:
         #                 drawable_list.append(inner_element)
         # return drawable_list
-        drawable_list = []
+        drawable_list = {}
+        for i in range(Z_ORDER.MAX_DEPTH):
+            drawable_list[i] = []
+
         for element in self.drawable_elements:
             for inner_element in element.on_draw():
-                drawable_list.append(inner_element)
-        return drawable_list
+                drawable_list[inner_element.z].append(inner_element)
 
+        drawable_text_list = {}
+        for i in range(Z_ORDER.MAX_DEPTH):
+            drawable_text_list[i] = []
 
-    def on_draw_text(self):
-        drawable_list = []
         for element in self.texts:
-            drawable_list.append(element.on_draw_text())
+            drawable_text_list[element.z].append(element.on_draw_text())
         for element in self.drawable_text_elements:
             element_drawable_list = element.on_draw_text()
             if element_drawable_list:
                 for inner_element in element_drawable_list:
                     if (inner_element):
-                        drawable_list.append(inner_element)
-        return drawable_list
+                        drawable_text_list[inner_element.z].append(inner_element)
+
+
+        # return [drawable_list, drawable_text_list]
+        for i in range(Z_ORDER.MAX_DEPTH):
+            for sprite_element in drawable_list[i]:
+                self.manager.spriterenderer.render(sprite_element = sprite_element)
+            for text in drawable_text_list[i]:
+                self.manager.renderer.copy(text.value, dstrect = (text.x, text.y, text.value.size[0], text.value.size[1]))
+
+
+    # def on_draw_text(self):
+    #     drawable_text_list = []
+    #     for element in self.texts:
+    #         drawable_list.append(element.on_draw_text())
+    #     for element in self.drawable_text_elements:
+    #         element_drawable_list = element.on_draw_text()
+    #         if element_drawable_list:
+    #             for inner_element in element_drawable_list:
+    #                 if (inner_element):
+    #                     drawable_list.append(inner_element)
+    #     return drawable_list
  

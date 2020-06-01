@@ -125,7 +125,7 @@ class Manager():
         # easily.
         self.factory = sdl2.ext.SpriteFactory(sdl2.ext.TEXTURE, renderer=self.renderer)
  
-        # self.text = self.factory.from_text("Unisung Softworks",fontmanager= ARIAL_FONT)
+        # self.text = self.factory.from_text("Unisung Softworks",fontmanager= ARIAL_FONT_WHITE)
 
         # Creates a simple rendering system for the Window. The
         # SpriteRenderSystem can draw Sprite objects on the window.
@@ -207,12 +207,11 @@ class Manager():
         if self.alive:
             self.renderer.clear(self.window_color)
             self.scene.on_update()
+            self.scene.on_draw()
 
-            for text in self.scene.on_draw_text():
-                self.renderer.copy(text.value, dstrect = (text.x, text.y, text.value.size[0], text.value.size[1]))
-            # print("test")
-            # print(self.scene.draw())
-            self.spriterenderer.render(sprites = self.scene.on_draw())
+            # for text in self.scene.on_draw_text():
+            #     self.renderer.copy(text.value, dstrect = (text.x, text.y, text.value.size[0], text.value.size[1]))
+            # self.spriterenderer.render(sprites = self.scene.on_draw())
             self.renderer.present()
             # Appears to no longer be necessary.
             # sdl2.timer.SDL_Delay(12)

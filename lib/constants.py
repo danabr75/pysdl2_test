@@ -1,12 +1,15 @@
 import sdl2.ext
+from sdl2.ext import Color
 
 from pathlib import Path
 import os
 
+from lib.z_order import ZOrder
 
 
 # os.getcwd()
 # could replace __file__
+Z_ORDER = ZOrder
 
 # in windows, this was still under lib, had to move assets under lib...
 #   now fixed with the following.
@@ -39,4 +42,6 @@ VISIBLE_MAP_TILE_HEIGHT = 6
 EXTRA_MAP_TILE_HEIGHT   = 4
 EXTRA_MAP_TILE_WIDTH    = 4
 
-ARIAL_FONT = sdl2.ext.FontManager(font_path = RESOURCES.get_path("arial.ttf"), size = 14)
+ARIAL_FONT_WHITE = sdl2.ext.FontManager(font_path = RESOURCES.get_path("arial.ttf"), size = 14)
+
+ARIAL_RED_WHITE  = sdl2.ext.FontManager(font_path = RESOURCES.get_path("arial.ttf"), size = 14, color = Color(255, 0, 0))

@@ -2,11 +2,16 @@ import sdl2.ext
 from lib.velocity import Velocity
 from lib.constants import *
 # https://pysdl2.readthedocs.io/en/rel_0_9_4/modules/sdl2ext_sprite.html
-class Sprite(sdl2.ext.Entity):
-  def __init__(self, scene, asset, x=128, y=128):
-    super(Sprite, self).__init__()
+# Couldn't set scale on entity. Can't add attributes to entities.
+# class Sprite(sdl2.ext.Entity):
+class Sprite(object):
+  def __init__(self, scene, asset, x, y, z, scale = DEFAULT_IMAGE_SCALE):
+    # super(Sprite, self).__init__()
+    # sdl2.ext.Sprite
     self.sprite = scene.factory.from_image(RESOURCES.get_path(asset))
     self.sprite.position = (x, y)
+    # print("HERER")
+    # print(self.sprite.frame_rect)
     # self.width, self.height = self.sprite.size
     # width, height = self.sprite.size
     # self.sprite.x = width // 2
@@ -14,6 +19,9 @@ class Sprite(sdl2.ext.Entity):
     # print("WIDTH AND HIGHT")
     # print(width, height)
     # print(self.sprite.x, self.sprite.y)
+    self.scale = scale
+    self.z = z
+    self.sprite.depth = z
 
 
     # self.sprite.angle = 90
@@ -27,5 +35,6 @@ class Sprite(sdl2.ext.Entity):
     # self.sprite.position = (x - self.sprite.x, y - self.sprite.y)
     # self.sprite.position = (x, y)
 
+  # should no longer be needed.
   def on_draw(self):
     return self.sprite

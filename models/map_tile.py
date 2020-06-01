@@ -9,8 +9,8 @@ class MapTile(object):
     self.y = y
     self.map_x = map_x
     self.map_y = map_y
-    self.sprite = Sprite(scene, terrain, self.x, self.y)
-    self.map_text = Text(scene, str(map_x) + ',' + str(map_y), self.x, self.y)
+    self.sprite = Sprite(scene, terrain, self.x, self.y, ZOrder.Background, 1)
+    self.map_text = Text(scene, str(map_x) + ',' + str(map_y), self.x, self.y, Z_ORDER.BackgroundUI)
 
   def on_update(self, x, y):
     # print("MAP TILE UPDATE: " + str([x, y]))
@@ -21,7 +21,7 @@ class MapTile(object):
     self.map_text.on_update(self.x, self.y)
 
   def on_draw(self):
-    return self.sprite.on_draw()
+    return self.sprite
 
   def on_draw_text(self):
     return self.map_text.on_draw_text()

@@ -38,7 +38,7 @@ class Player(object):
     self.x = x
     self.y = y
     # self.sprite = scene.factory.from_image(RESOURCES.get_path("test.png"))
-    self.sprite = Sprite(scene, 'ship.png', self.x, self.y)
+    self.sprite = Sprite(scene, 'ship.png', self.x, self.y, Z_ORDER.Player)
 
 
     self.velocity = Velocity(1)
@@ -53,7 +53,7 @@ class Player(object):
     self.speed = 3
     self.angle = 0
 
-    self.player_text = Text(scene, "player")
+    self.player_text = Text(scene, "player", self.x, self.y, Z_ORDER.PlayerUI)
 
   def rotate_clockwise(self):
     if self.controls_enabled:
@@ -100,7 +100,7 @@ class Player(object):
     # pass
 
   def on_draw(self):
-    return [self.sprite.on_draw()]
+    return [self.sprite]
 
   # event methods
   def key_status(self, keystatus):
