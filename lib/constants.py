@@ -29,6 +29,7 @@ RESOURCES = sdl2.ext.Resources(ASSETS_FOLDER)
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
 
+
 LIMIT_FPS = 60
 WINDOW_COLOR = (0, 0, 0, 255)
 
@@ -47,3 +48,7 @@ EXTRA_MAP_TILE_WIDTH    = 4
 ARIAL_FONT_WHITE = sdl2.ext.FontManager(font_path = RESOURCES.get_path("arial.ttf"), size = 14)
 
 ARIAL_RED_WHITE  = sdl2.ext.FontManager(font_path = RESOURCES.get_path("arial.ttf"), size = 14, color = Color(255, 0, 0))
+
+TILE_WIDTH_AND_HEIGHT = round(SCREEN_HEIGHT // VISIBLE_MAP_TILE_HEIGHT)
+
+

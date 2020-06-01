@@ -3,21 +3,21 @@ from models.sprite import Sprite
 from models.text import Text
 
 class MapTile(object):
-  def __init__(self, scene, terrain, x, y, h_and_w, map_x, map_y):
-    self.x = x
-    self.y = y
+        # MapTile(self.scene, map_data['terrains'][self.map_data[h][w]['terrain_index']], self.tile_height_and_width, h, w)
+  def __init__(self, scene, terrain, h_and_w, map_tile_x, map_tile_y):
+    self.scene = scene
+    self.x = None
+    self.y = None
     self.h = round(h_and_w * HEIGHT_SCALER)
     self.w = round(h_and_w * HEIGHT_SCALER)
-    self.map_x = map_x
-    self.map_y = map_y
+    self.map_tile_x = map_tile_x
+    self.map_tile_y = map_tile_y
+    self.map_x, self.map_y = self.scene.get_map_x_and_map_y_from_tile(self)
     self.sprite = Sprite(scene, terrain, self.x, self.y, ZOrder.Background, self.h, self.w, 1)
-    self.map_text = Text(scene, str(map_x) + ',' + str(map_y), self.x, self.y, Z_ORDER.BackgroundUI)
+    self.map_text = Text(scene, str(map_tile_x) + ',' + str(map_tile_y), self.x, self.y, Z_ORDER.BackgroundUI)
 
-  def on_update(self, x, y):
-    # print("MAP TILE UPDATE: " + str([x, y]))
-    self.x = x
-    self.y = y
-    # Update in position to the Camera.
+  def on_update(self):
+    self.x, self.y = self.scene.get_x_and_y_pos_from_camera(self)
     self.sprite.on_update(self.x, self.y)
     self.map_text.on_update(self.x, self.y)
 

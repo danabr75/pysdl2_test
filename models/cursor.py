@@ -28,7 +28,7 @@ class Cursor(object):
   def on_mouse_press(self, event, x, y, button, double):
       # print("on_mouse_press")
       if self.is_clicked == False:
-          # print("PRESS TRIGGERED")
+          print("PRESS TRIGGERED AT: " + str([x, y]))
           self.is_clicked = True
           # print(self.is_clicked)
           self.sprite = self.clicked_sprite

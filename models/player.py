@@ -6,37 +6,16 @@ from models.text import Text
 import math
 
 class Player(object):
-
-  # def __new__(cls, scene):
-  #   player = super().__new__(cls, scene)
-  #   player.x = 1
-  #   player.y = 1
-  #   # player.update_sprite()
-  #   return player
-
-  def __init__(self, scene, x=128, y=128):
-    # super(Player, self).__init__()
-    # sdl2.ext.TextureSprite
-    # https://pysdl2.readthedocs.io/en/latest/modules/sdl2ext_sprite.html
-    # test_sprite = sdl2.ext.TextureSprite()
-    # factory = sdl2.ext.SpriteFactory(sdl2.ext.TEXTURE, renderer=sdl2.ext.Renderer(window))
-    # SoftwareSprite vs TextureSprite. can create both?
-
-    # https://pysdl2.readthedocs.io/en/rel_0_9_4/modules/sdl2ext_sprite.html#sdl2.ext.TextureSprite
-    # sprite = factory.from_text('123', fontmanager=sdl2.ext.FontManager())
-    # print("GOT HERE")
-    # print(type(sprite))
-    # print(sprite)
-
-    # sdl2.ext.sprite.TextureSprite
-    # sprite = factory.from_color(WHITE, size=(20, 100))
+  def __init__(self, scene):
     self.scene = scene
-    # Depth HERE
-    # http://pysdl2.readthedocs.org/en/latest/modules/sdl2ext_sprite.html
-    # c.depth = -1
-    # Entity(world, c, 100, 100)
-    self.x = x
-    self.y = y
+    self.map_tile_x = 100
+    self.map_tile_y = 100
+    # self.map_x, self.map_y = [None, None]
+    self.map_x, self.map_y = self.scene.get_map_x_and_map_y_from_tile(self)
+    print("PLAYER GOT HERE")
+    print(str([self.map_x, self.map_y]))
+    self.x = None
+    self.y = None
     # self.sprite = scene.factory.from_image(RESOURCES.get_path("test.png"))
     self.sprite = Sprite(scene, 'ship.png', self.x, self.y, Z_ORDER.Player)
 
@@ -86,14 +65,16 @@ class Player(object):
     # print("OLD X, OLD Y: " + str([self.x, self.y]))
     # testx = (math.cos(step) * base_speed + self.x)
     # testy = (math.sin(step) * base_speed + self.y)
-    self.x = round(math.cos(step) * base_speed + self.x)
-    self.y = round(math.sin(step) * base_speed + self.y)
+    self.map_x = round(math.cos(step) * base_speed + self.map_x)
+    self.map_y = round(math.sin(step) * base_speed + self.map_y)
     # print("NEW X, OLD Y: " + str([self.x, self.y]))
     # print("POS X, POS Y: " + str([testx, testy]))
 
 
   def on_update(self):
     # self.update_sprite()
+    # Always center of screen.
+    self.x, self.y = [ round(SCREEN_WIDTH // 2), round(SCREEN_HEIGHT // 2) ] #self.scene.get_x_and_y_pos_from_camera(self)
     self.sprite.on_update(self.x, self.y, (self.angle / 100))
     self.player_text.on_update(self.x, self.y)
     # self.sprite.angle
@@ -139,37 +120,8 @@ class Player(object):
 
   def on_key_press(self, event, sym, mod):
     pass
-    # if sym == sdl2.SDLK_w:
-    #   # print("PLayer W")
-    #   self.y -= 1
-    #   # self.x += 1
-    #   self.move_up = True
-    # if sym == sdl2.SDLK_s:
-    #   # print("PLayer S")
-    #   self.move_down = True
-    #   self.y += 1
-    #   # self.x -= 1
-    # if sym == sdl2.SDLK_d:
-    #   # print("PLayer D")
-    #   self.move_right = True
-    #   self.x += 1
-    # if sym == sdl2.SDLK_a:
-    #   # print("PLayer A")
-    #   self.move_left = True
-    #   self.x -= 1
-
   def on_key_release(self, event, sym, mod):
     pass
-    # if sym == sdl2.SDLK_w:
-    #   # print("PLayer stop mvoe up")
-    #   self.move_up = False
-    # if sym == sdl2.SDLK_s:
-    #   self.move_down = False
-    # if sym == sdl2.SDLK_d:
-    #   self.move_right = False
-    # if sym == sdl2.SDLK_a:
-    #   self.move_left = False
 
   def on_draw_text(self):
     return [self.player_text]
-    # pass

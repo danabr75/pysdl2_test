@@ -36,6 +36,9 @@ class SceneBase(sdl2.ext.World):
 
         # fname = RESOURCES.get_path("cursor.png")
         fname = RESOURCES.get_path("cursor.png")
+        player = Player(self)
+        self.camera = CameraPOV(player, self)
+        self.background = Background(self, self.manager.width, self.manager.height)
  
         # use the pysdl2 factory to create a sprite from an image
         self.cursor_sprite = self.factory.from_image(fname)
@@ -43,10 +46,8 @@ class SceneBase(sdl2.ext.World):
         # set it to a position to look better on our screenshot :)
         self.cursor_sprite.position = (128, 128)
 
-        player = Player(self)
+        
         cursor = Cursor(self)
-        self.camera = CameraPOV(player)
-        self.background = Background(self, self.manager.width, self.manager.height)
 
         self.logo_text = Text(self, "TEXT DRAWABLE", 0, 0, Z_ORDER.UI)
 
@@ -262,6 +263,20 @@ class SceneBase(sdl2.ext.World):
         """
         pass
  
+    def get_x_and_y_pos_from_camera(self, object):
+        # x = self.camera.map_x - object.map_x
+        # y = self.camera.map_y - object.map_y
+        x = object.map_x - self.camera.map_x
+        y = object.map_y - self.camera.map_y
+
+        return [x, y]
+    def get_map_x_and_map_y_from_tile(self, object):
+        return [
+            # Rounds down
+            int(object.map_tile_x * TILE_WIDTH_AND_HEIGHT), 
+            int(object.map_tile_y * TILE_WIDTH_AND_HEIGHT)
+        ]
+
     def on_update(self):
         """Graphical logic."""
         # pass
