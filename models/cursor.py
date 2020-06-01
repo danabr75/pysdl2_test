@@ -11,8 +11,8 @@ class Cursor(object):
     self.is_clicked = False
     _mouse_x, _mouse_y = self._get_mouse_state()
 
-    self.unclicked_sprite = Sprite(scene, 'cursor.png', _mouse_x, _mouse_y, Z_ORDER.Cursor)
-    self.clicked_sprite = Sprite(scene, 'cursor_clicked.png', _mouse_x, _mouse_y, Z_ORDER.Cursor)
+    self.unclicked_sprite = Sprite(scene, 'cursor.png', _mouse_x, _mouse_y, Z_ORDER.Cursor, None, None)
+    self.clicked_sprite = Sprite(scene, 'cursor_clicked.png', _mouse_x, _mouse_y, Z_ORDER.Cursor, None, None)
     self.sprite = self.unclicked_sprite
 
   def on_mouse_drag(self, event, x, y, dx, dy, button):

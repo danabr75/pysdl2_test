@@ -8,11 +8,14 @@ class Background(object):
   def __init__(self, scene, screen_width, screen_height):
     self.scene = scene
     self.camera = self.scene.camera
-    self.map_tile_width  = 100
-    self.map_tile_height = 100
 
     self.screen_width  = screen_width
     self.screen_height = screen_height
+
+    self.map_height_and_width = round(self.screen_height // VISIBLE_MAP_TILE_HEIGHT)
+    self.visible_map_tile_width = round(self.screen_width // self.map_height_and_width)
+    print("map_height_and_width")
+    print(self.map_height_and_width)
 
 
     map_file = open(str(Path(MAPS_FOLDER + "/snow.txt")), "r")
@@ -30,23 +33,17 @@ class Background(object):
     print("self.map_data with size: " + str([self.map_width, self.map_height]))
     for h in range(0, self.map_height):
         for w in range(0, self.map_width):
-            self.map_data[h][w]['map_tile'] = MapTile(self.scene, map_data['terrains'][self.map_data[h][w]['terrain_index']], 0, 0, h, w)
+            self.map_data[h][w]['map_tile'] = MapTile(self.scene, map_data['terrains'][self.map_data[h][w]['terrain_index']], 0, 0, self.map_height_and_width, h, w)
 
-    self.map_height = len(self.map_data)
-    self.map_width = len(self.map_data[0])
-
-    self.tile_pixel_width  = self.screen_width  / VISIBLE_MAP_TILE_WIDTH
-    self.tile_pixel_height = self.screen_height / VISIBLE_MAP_TILE_HEIGHT
-
-    self.map_pixel_width  = int(self.map_tile_width  * self.tile_pixel_width)
-    self.map_pixel_height = int(self.map_tile_height * self.tile_pixel_height)
+    self.map_pixel_width  = int(self.map_height  * self.map_height_and_width)
+    self.map_pixel_height = int(self.map_width   * self.map_height_and_width)
 
 
     # print("MAP DATA")
     # print(self.map_data[0][0])
     # {'corner_heights': {'top_left': 3, 'bottom_right': 2.587122972263349, 'bottom_left': 3, 'top_right': 3}, 'terrain_paths_and_weights': {'top_left': {'2': 0.25}, 'bottom_right': {'2': 0.5, '0': 0.5}, 'bottom_left': {'2': 0.25, '0': 0.25}, 'top_right': {'2': 0.25, '0': 0.25}}, 'terrain_index': 2, 'height': 3, 'terrain_type': 'snow'}
 
-    self.visible_map_width  = VISIBLE_MAP_TILE_WIDTH + EXTRA_MAP_TILE_WIDTH
+    self.visible_map_width  = self.visible_map_tile_width + EXTRA_MAP_TILE_WIDTH
     self.visible_map_width_half = int(self.visible_map_width / 2)
     self.visible_map_height = VISIBLE_MAP_TILE_HEIGHT + EXTRA_MAP_TILE_HEIGHT
     self.visible_map_height_half = int(self.visible_map_height / 2)
@@ -91,8 +88,8 @@ class Background(object):
 
         if (tile):
           tile.on_update(
-            round((w_counter * self.tile_pixel_width)  - ((EXTRA_MAP_TILE_WIDTH / 2)  * self.tile_pixel_width)),
-            round((h_counter * self.tile_pixel_height) - ((EXTRA_MAP_TILE_HEIGHT / 2) * self.tile_pixel_height))
+            round((w_counter * self.map_height_and_width)  - ((EXTRA_MAP_TILE_WIDTH / 2)  * self.map_height_and_width)),
+            round((h_counter * self.map_height_and_width) - ((EXTRA_MAP_TILE_HEIGHT / 2) * self.map_height_and_width))
           )
 
         w_counter += 1

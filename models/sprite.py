@@ -5,7 +5,7 @@ from lib.constants import *
 # Couldn't set scale on entity. Can't add attributes to entities.
 # class Sprite(sdl2.ext.Entity):
 class Sprite(object):
-  def __init__(self, scene, asset, x, y, z, scale = DEFAULT_IMAGE_SCALE):
+  def __init__(self, scene, asset, x, y, z, h = None, w = None, scale = DEFAULT_IMAGE_SCALE):
     # super(Sprite, self).__init__()
     # sdl2.ext.Sprite
     self.sprite = scene.factory.from_image(RESOURCES.get_path(asset))
@@ -22,6 +22,14 @@ class Sprite(object):
     self.scale = scale
     self.z = z
     self.sprite.depth = z
+    if h:
+        self.h = int(h // self.scale)
+    else:
+        self.h = int(self.sprite.size[1] // self.scale)
+    if w:
+        self.w = int(w // self.scale)
+    else:
+        self.w = int(self.sprite.size[0] // self.scale)
 
 
     # self.sprite.angle = 90

@@ -45,8 +45,7 @@ class TextureRenderer(sdl2.ext.TextureSpriteRenderSystem):
         sp = sprite_element.on_draw()
         r.x = x + sp.x
         r.y = y + sp.y
-        r.w, r.h = sp.size
-        r.w = int(r.w / sprite_element.scale)
-        r.h = int(r.h / sprite_element.scale)
+        r.w = sprite_element.w
+        r.h = sprite_element.h
         if rcopy(renderer, sp.texture, None, r, sp.angle, None, render.SDL_FLIP_NONE) == -1:
             raise SDLError()
