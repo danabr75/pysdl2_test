@@ -180,12 +180,14 @@ class Manager():
  
     def run(self):
         # Calculate our framerate.
+        tick = 0
         if self.show_fps:
             time_new = time.time()
             time_old = time.time()
             time_track = []
         """Main loop handling events and updates."""
         while self.alive:
+            tick += 1
             if self.show_fps:
                 time_elapsed = time_new - time_old
                 time_track.append(time_elapsed)
@@ -199,6 +201,9 @@ class Manager():
                     average = sum(time_track) / len(time_track)
                     print("FPS:", int(1/average))
                     time_track = []
+            if self.limit_fps == tick:
+                tick = 0
+                self.occasional_update()
 
         return sdl2.ext.quit()
 
@@ -234,6 +239,10 @@ class Manager():
         #     #     sdl2.timer.SDL_Delay(frameDelay - frameTime);
         #     sdl2.timer.SDL_Delay(100)
  
+    def occasional_update(self):
+        if self.alive:
+            self.scene.occasional_update()
+
     def present(self):
         """Flip the GPU buffer."""
         sdl2.render.SDL_RenderPresent(self.spriterenderer.sdlrenderer)

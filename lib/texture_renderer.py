@@ -43,8 +43,9 @@ class TextureRenderer(sdl2.ext.TextureSpriteRenderSystem):
         rcopy = render.SDL_RenderCopyEx
         renderer = self.sdlrenderer
         sp = sprite_element.on_draw()
-        r.x = x + sp.x
-        r.y = y + sp.y
+        r.x = x + sp.x - sprite_element.h_w
+        # r.x = x + sp.x + sprite_element.h_w
+        r.y = y + sp.y - sprite_element.h_h
         r.w = sprite_element.w
         r.h = sprite_element.h
         if rcopy(renderer, sp.texture, None, r, sp.angle, None, render.SDL_FLIP_NONE) == -1:

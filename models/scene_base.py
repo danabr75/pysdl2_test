@@ -56,6 +56,7 @@ class SceneBase(sdl2.ext.World):
         self.updatable_elements = [player, self.camera, self.background]
         self.key_listeners      = [player]
         self.mouse_listeners    = [cursor]
+        self.occasional_updatable_elements = [player]
 
         self.texts = [self.logo_text]
         self.drawable_text_elements  = [player, self.background]
@@ -266,8 +267,8 @@ class SceneBase(sdl2.ext.World):
     def get_x_and_y_pos_from_camera(self, object):
         # x = self.camera.map_x - object.map_x
         # y = self.camera.map_y - object.map_y
-        x = object.map_x - self.camera.map_x
-        y = object.map_y - self.camera.map_y
+        x = object.map_x - self.camera.map_x + SCREEN_WIDTH  // 2
+        y = object.map_y - self.camera.map_y + SCREEN_HEIGHT // 2
 
         return [x, y]
     def get_map_x_and_map_y_from_tile(self, object):
@@ -276,6 +277,18 @@ class SceneBase(sdl2.ext.World):
             int(object.map_tile_x * TILE_WIDTH_AND_HEIGHT), 
             int(object.map_tile_y * TILE_WIDTH_AND_HEIGHT)
         ]
+
+    def get_tile_x_and_tile_y_from_map(self, object):
+        return [
+            # Rounds down
+            int(object.map_x // TILE_WIDTH_AND_HEIGHT), 
+            int(object.map_y // TILE_WIDTH_AND_HEIGHT)
+        ]
+
+
+    def occasional_update(self):
+        for element in self.occasional_updatable_elements:
+            element.occasional_update()
 
     def on_update(self):
         """Graphical logic."""

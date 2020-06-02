@@ -12,12 +12,17 @@ class Player(object):
     self.map_tile_y = 100
     # self.map_x, self.map_y = [None, None]
     self.map_x, self.map_y = self.scene.get_map_x_and_map_y_from_tile(self)
-    print("PLAYER GOT HERE")
-    print(str([self.map_x, self.map_y]))
-    self.x = None
-    self.y = None
+    # print("PLAYER GOT HERE")
+    # print(str([self.map_x, self.map_y]))
+    # self.x = None
+    # self.y = None
+    self.x, self.y = [ round(SCREEN_WIDTH // 2), round(SCREEN_HEIGHT // 2) ]
     # self.sprite = scene.factory.from_image(RESOURCES.get_path("test.png"))
     self.sprite = Sprite(scene, 'ship.png', self.x, self.y, Z_ORDER.Player)
+    self.h = self.sprite.h
+    self.w = self.sprite.w
+    self.h_h = round(self.h // 2)
+    self.h_w = round(self.w // 2)
 
 
     self.velocity = Velocity(1)
@@ -32,7 +37,8 @@ class Player(object):
     self.speed = 3
     self.angle = 0
 
-    self.player_text = Text(scene, "player", self.x, self.y, Z_ORDER.PlayerUI)
+    self.player_text = Text(self.scene, "...", self.x, self.y, Z_ORDER.PlayerUI)
+    self.player_text2 = Text(self.scene, "...", self.x, self.y, Z_ORDER.PlayerUI)
 
   def rotate_clockwise(self):
     if self.controls_enabled:
@@ -74,11 +80,24 @@ class Player(object):
   def on_update(self):
     # self.update_sprite()
     # Always center of screen.
-    self.x, self.y = [ round(SCREEN_WIDTH // 2), round(SCREEN_HEIGHT // 2) ] #self.scene.get_x_and_y_pos_from_camera(self)
-    self.sprite.on_update(self.x, self.y, (self.angle / 100))
+
+    # self.x, self.y = [ round(SCREEN_WIDTH // 2), round(SCREEN_HEIGHT // 2) ]
+    self.x, self.y = self.scene.get_x_and_y_pos_from_camera(self)
+
+    
+    # self.h_h = round(self.h // 2)
+    # self.h_w = round(self.w // 2)
+    # self.x += self.h_w
+    # self.y += self.h_h
+    self.sprite.on_update(self.x, self.y, round(self.angle // 100.0))
     self.player_text.on_update(self.x, self.y)
     # self.sprite.angle
     # pass
+
+  def occasional_update(self):
+    self.map_tile_x, self.map_tile_y = self.scene.get_tile_x_and_tile_y_from_map(self)
+    self.player_text  = Text(self.scene, "p tile (" + str(self.map_tile_x) + ", " + str(self.map_tile_y) + ")", self.x, self.y, Z_ORDER.PlayerUI)
+    self.player_text2 = Text(self.scene, "p map (" + str(self.map_x) + ", " + str(self.map_y) + ")", self.x, self.y + 30, Z_ORDER.PlayerUI)
 
   def on_draw(self):
     return [self.sprite]
@@ -124,4 +143,4 @@ class Player(object):
     pass
 
   def on_draw_text(self):
-    return [self.player_text]
+    return [self.player_text, self.player_text2]

@@ -9,11 +9,18 @@ class Cursor(object):
     sdl2.SDL_ShowCursor(sdl2.SDL_DISABLE);
     super(Cursor, self).__init__()
     self.is_clicked = False
-    _mouse_x, _mouse_y = self._get_mouse_state()
+    self.x, self.y = self._get_mouse_state()
 
-    self.unclicked_sprite = Sprite(scene, 'cursor.png', _mouse_x, _mouse_y, Z_ORDER.Cursor, None, None)
-    self.clicked_sprite = Sprite(scene, 'cursor_clicked.png', _mouse_x, _mouse_y, Z_ORDER.Cursor, None, None)
+    self.h = round(100 * HEIGHT_SCALER)
+    self.w = round(100 * HEIGHT_SCALER)
+
+    self.h_h = round(self.h // 2)
+    self.h_w = round(self.w // 2)
+
+    self.unclicked_sprite = Sprite(scene, 'cursor.png', self.x, self.y, Z_ORDER.Cursor, self.w, self.h)
+    self.clicked_sprite = Sprite(scene, 'cursor_clicked.png', self.x, self.y, Z_ORDER.Cursor, self.w, self.h)
     self.sprite = self.unclicked_sprite
+
 
   def on_mouse_drag(self, event, x, y, dx, dy, button):
       # self.sprite.position = (x, y)

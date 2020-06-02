@@ -102,7 +102,8 @@ class Background(object):
     for height_row in self.visible_map_tiles_matrix:
       for cell in height_row:
         if cell:
-          drawable_list.append(cell.on_draw_text())
+          for text in cell.on_draw_text():
+            drawable_list.append(text.on_draw_text())
     return drawable_list
 
 

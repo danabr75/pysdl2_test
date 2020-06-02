@@ -20,3 +20,7 @@ class CameraPOV(object):
     self.map_y = self.object.map_y
     self.map_tile_x = self.object.map_tile_x
     self.map_tile_y = self.object.map_tile_y
+
+  # def occasional_update(self)
+  #   self.map_tile_x = self.object.map_tile_x
+  #   self.map_tile_y = self.object.map_tile_y
