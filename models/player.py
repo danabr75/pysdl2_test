@@ -84,7 +84,7 @@ class Player(object):
     # self.x, self.y = [ round(SCREEN_WIDTH // 2), round(SCREEN_HEIGHT // 2) ]
     self.x, self.y = self.scene.get_x_and_y_pos_from_camera(self)
 
-    
+
     # self.h_h = round(self.h // 2)
     # self.h_w = round(self.w // 2)
     # self.x += self.h_w
@@ -143,4 +143,5 @@ class Player(object):
     pass
 
   def on_draw_text(self):
-    return [self.player_text, self.player_text2]
+    pass
+    # return [self.player_text, self.player_text2]

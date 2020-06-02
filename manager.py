@@ -107,8 +107,8 @@ class Manager():
         # Initialize with no scene
         self.scene = None
 
-        self.show_fps = True
-        # self.show_fps = False
+        # self.show_fps = True
+        self.show_fps = False
 
         if opengl:
             # No hardware accelerated renderers available, on python 3.7

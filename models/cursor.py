@@ -21,6 +21,8 @@ class Cursor(object):
     self.clicked_sprite = Sprite(scene, 'cursor_clicked.png', self.x, self.y, Z_ORDER.Cursor, self.w, self.h)
     self.sprite = self.unclicked_sprite
 
+    self.scene = scene
+
 
   def on_mouse_drag(self, event, x, y, dx, dy, button):
       # self.sprite.position = (x, y)
@@ -39,6 +41,7 @@ class Cursor(object):
           self.is_clicked = True
           # print(self.is_clicked)
           self.sprite = self.clicked_sprite
+          self.scene.background.print_visible_map()
 
   def on_mouse_release(self, event, x, y, button, double):
       # print("on_mouse_release")
