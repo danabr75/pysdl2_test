@@ -26,12 +26,25 @@ class MapTile(object):
     self.start_visible_map_y = None
     self.map_text2 = None
     self.debug_val = False
+    self.map_text5 = None
 
-  def debug(self, start_visible_map_x, start_visible_map_y, debug_val = False):
+  def debug(self, start_visible_map_x, start_visible_map_y, debug_val = False, retrieved_x=None, retrieved_y=None):
     self.debug_val = debug_val
     self.start_visible_map_x = start_visible_map_x
     self.start_visible_map_y = start_visible_map_y
     self.map_text2 = Text(self.scene, "init: " + str(self.start_visible_map_x) + ',' + str(self.start_visible_map_y), 0, 0, Z_ORDER.BackgroundUI)
+    if retrieved_x:
+        print("RETRIEVED BY: " + str(retrieved_x) + ',' + str(retrieved_y))
+        print("VISIBLE BY: " + str(start_visible_map_x) + ',' + str(start_visible_map_y))
+        print("FOR MAP TILE: " + str(self.map_tile_x) + ',' + str(self.map_tile_y))
+        self.map_text5 = Text(self.scene, "Ret: " + str(retrieved_x) + ',' + str(retrieved_y), 0, 0, Z_ORDER.BackgroundUI)
+    if retrieved_x or retrieved_y:
+        if retrieved_x != self.map_tile_x:
+            print("X DID NOT MATCH: wanted " + str(retrieved_x) + " but got: " + str(self.map_tile_x))
+            raise "STOP"
+        if retrieved_y != self.map_tile_y:
+            print("Y DID NOT MATCH: wanted " + str(retrieved_y) + " but got: " + str(self.map_tile_y))
+            raise "STOP"
 
   def on_update(self, h, w):
     self.x, self.y = self.scene.get_x_and_y_pos_from_camera(self)
@@ -45,12 +58,20 @@ class MapTile(object):
         self.map_text2.on_update(self.x, self.y + 15)
     self.map_text3 = Text(self.scene, "now: " + str(h) + ',' + str(w), self.x, self.y + 30, Z_ORDER.BackgroundUI)
     self.map_text4.on_update(self.x, self.y + 45)
+    if self.map_text5:
+        self.map_text5.on_update(self.x, self.y + 60)
 
   def on_draw(self):
     return self.sprite
 
   def on_draw_text(self):
     if self.map_text2:
-        return [self.map_text, self.map_text2, self.map_text3, self.map_text4]
+        result = [self.map_text, self.map_text2, self.map_text3, self.map_text4]
+        if self.map_text5:
+            result.append(self.map_text5)
+        return result
     else:
-        return [self.map_text, self.map_text3, self.map_text4]
+        result = [self.map_text, self.map_text3, self.map_text4]
+        if self.map_text5:
+            result.append(self.map_text5)
+        return result
