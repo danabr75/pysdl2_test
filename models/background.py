@@ -137,7 +137,8 @@ class Background(object):
       #   # del self.visible_map_tiles_matrix[-1]
       #   self.map_tile_x = self.map_tile_x - 1
       # WEST
-      if map_tile_x_diff > 0:
+      # if map_tile_x_diff > 0:
+      while map_tile_x_diff > 0:
         left_side_x_axis = self.map_tile_x - self.visible_map_width_half - 1
         print("left_side_x_axis: " + str(left_side_x_axis))
         for left_side_y_axis in range(0, self.visible_map_height):
@@ -147,8 +148,10 @@ class Background(object):
           cell = self.map_data[map_data_y_offset][left_side_x_axis]['map_tile']
 
           self.visible_map_tiles_matrix[left_side_y_axis].insert(0, cell)
+          del self.visible_map_tiles_matrix[left_side_y_axis][-1]
           # self.visible_map_tiles_matrix[visible_map_y_offset].append(cell)
         self.map_tile_x = self.map_tile_x - 1
+        map_tile_x_diff = map_tile_x_diff - 1
 
 
         
