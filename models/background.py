@@ -58,9 +58,9 @@ class Background(object):
     self.visible_map_width  = self.visible_map_tile_width + EXTRA_MAP_TILE_WIDTH
     print("self.visible_map_width: " + str(self.visible_map_width))
     # 12
-    self.visible_map_width_half = round(self.visible_map_width / 2)
+    self.visible_map_width_half = int(self.visible_map_width / 2)
     self.visible_map_height = VISIBLE_MAP_TILE_HEIGHT + EXTRA_MAP_TILE_HEIGHT
-    self.visible_map_height_half = round(self.visible_map_height / 2)
+    self.visible_map_height_half = int(self.visible_map_height / 2)
     self.visible_map_tiles_matrix = [[None for i in range(self.visible_map_width)] for j in range(self.visible_map_height)]
     self.init_visible_map_tiles_matrix()
     self.texts = []
@@ -137,23 +137,54 @@ class Background(object):
       #   # del self.visible_map_tiles_matrix[-1]
       #   self.map_tile_x = self.map_tile_x - 1
       # WEST
-      # if map_tile_x_diff > 0:
-      while map_tile_x_diff > 0:
-        left_side_x_axis = self.map_tile_x - self.visible_map_width_half - 1
-        print("left_side_x_axis: " + str(left_side_x_axis))
-        for left_side_y_axis in range(0, self.visible_map_height):
-          
-          map_data_y_offset = self.map_tile_y + (left_side_y_axis - self.visible_map_height_half)
+      if map_tile_x_diff > 0:
+        while map_tile_x_diff > 0:
+          # If Even
+          if (self.visible_map_width % 2) == 0:
+            left_side_x_axis = self.map_tile_x - self.visible_map_width_half - 1
+          else:
+            left_side_x_axis = self.map_tile_x - self.visible_map_width_half #- 1
+          print("left_side_x_axis: " + str(left_side_x_axis))
+          for left_side_y_axis in range(0, self.visible_map_height):
+            
+            map_data_y_offset = self.map_tile_y + (left_side_y_axis - self.visible_map_height_half)
+            if left_side_x_axis >= 0:
+              cell = self.map_data[map_data_y_offset][left_side_x_axis]['map_tile']
+            else:
+              cell = None
 
-          cell = self.map_data[map_data_y_offset][left_side_x_axis]['map_tile']
+            self.visible_map_tiles_matrix[left_side_y_axis].insert(0, cell)
+            del self.visible_map_tiles_matrix[left_side_y_axis][-1]
+            # self.visible_map_tiles_matrix[visible_map_y_offset].append(cell)
+          self.map_tile_x = self.map_tile_x - 1
+          map_tile_x_diff = map_tile_x_diff - 1
 
-          self.visible_map_tiles_matrix[left_side_y_axis].insert(0, cell)
-          del self.visible_map_tiles_matrix[left_side_y_axis][-1]
-          # self.visible_map_tiles_matrix[visible_map_y_offset].append(cell)
-        self.map_tile_x = self.map_tile_x - 1
-        map_tile_x_diff = map_tile_x_diff - 1
+      if map_tile_x_diff < 0:
+        while map_tile_x_diff < 0:
+          # If Even
+          if (self.visible_map_width % 2) == 0:
+            right_side_x_axis = self.map_tile_x + self.visible_map_width_half #- 1
+          else:
+            right_side_x_axis = self.map_tile_x + self.visible_map_width_half - 1
+          print("right_side_x_axis: " + str(right_side_x_axis))
+          for right_side_y_axis in range(0, self.visible_map_height):
+            
+            map_data_y_offset = self.map_tile_y + (right_side_y_axis - self.visible_map_height_half)
 
 
+            # self.map_tile_height
+            # self.map_tile_width
+            if right_side_x_axis < self.map_tile_width:
+              print("map_data_y_offset: " + str(map_data_y_offset) + " in length: " + str(len(self.map_data)))
+              print("right_side_x_axis: " + str(right_side_x_axis) + " in length: " + str(len(self.map_data[map_data_y_offset])))
+              cell = self.map_data[map_data_y_offset][right_side_x_axis]['map_tile']
+            else:
+              cell = None
+
+            self.visible_map_tiles_matrix[right_side_y_axis].append(cell)
+            del self.visible_map_tiles_matrix[right_side_y_axis][0]
+          self.map_tile_x = self.map_tile_x + 1
+          map_tile_x_diff = map_tile_x_diff + 1
         
 
   def on_draw(self):
