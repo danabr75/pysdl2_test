@@ -149,10 +149,11 @@ class Background(object):
           for left_side_y_axis in range(0, self.visible_map_height):
             
             map_data_y_offset = self.map_tile_y + (left_side_y_axis - self.visible_map_height_half)
+            cell = None
             if left_side_x_axis >= 0:
-              cell = self.map_data[map_data_y_offset][left_side_x_axis]['map_tile']
-            else:
-              cell = None
+              if map_data_y_offset >= 0 and map_data_y_offset < self.map_tile_height:
+                cell = self.map_data[map_data_y_offset][left_side_x_axis]['map_tile']
+              
 
             self.visible_map_tiles_matrix[left_side_y_axis].insert(0, cell)
             del self.visible_map_tiles_matrix[left_side_y_axis][-1]
@@ -170,12 +171,14 @@ class Background(object):
           print("right_side_x_axis: " + str(right_side_x_axis))
           for right_side_y_axis in range(0, self.visible_map_height):
             map_data_y_offset = self.map_tile_y + (right_side_y_axis - self.visible_map_height_half)
+
+            cell = None
             if right_side_x_axis < self.map_tile_width:
               print("map_data_y_offset: " + str(map_data_y_offset) + " in length: " + str(len(self.map_data)))
               print("right_side_x_axis: " + str(right_side_x_axis) + " in length: " + str(len(self.map_data[map_data_y_offset])))
-              cell = self.map_data[map_data_y_offset][right_side_x_axis]['map_tile']
-            else:
-              cell = None
+              if map_data_y_offset >= 0 and map_data_y_offset < self.map_tile_height:
+                cell = self.map_data[map_data_y_offset][right_side_x_axis]['map_tile']
+              
 
             self.visible_map_tiles_matrix[right_side_y_axis].append(cell)
             del self.visible_map_tiles_matrix[right_side_y_axis][0]
@@ -184,7 +187,6 @@ class Background(object):
         
       # NORTH
       if map_tile_y_diff > 0:
-        print("GOT HER")
         while map_tile_y_diff > 0:
           top_side_y_axis = self.map_tile_y - self.visible_map_height_half - 1
           # # If Even
@@ -199,12 +201,12 @@ class Background(object):
           for x_axis in range(0, self.visible_map_width):
             # WHY WAS IT 2 OFF on the X INDEX?
             map_data_x_offset = self.map_tile_x + (x_axis - self.visible_map_height_half) - 2
+            cell = None
             if top_side_y_axis < self.map_tile_height:
               # print("map_data_y_offset: " + str(map_data_y_offset) + " in length: " + str(len(self.map_data)))
               # print("top_side_y_axis: " + str(top_side_y_axis) + " in length: " + str(len(self.map_data[map_data_y_offset])))
-              cell = self.map_data[top_side_y_axis][map_data_x_offset]['map_tile']
-            else:
-              cell = None
+              if map_data_x_offset >= 0 and map_data_x_offset < self.map_tile_width:
+                cell = self.map_data[top_side_y_axis][map_data_x_offset]['map_tile']
 
             # self.visible_map_tiles_matrix[right_side_y_axis].append(cell)
             # del self.visible_map_tiles_matrix[right_side_y_axis][0]
@@ -213,6 +215,36 @@ class Background(object):
           map_tile_y_diff = map_tile_y_diff - 1
           del self.visible_map_tiles_matrix[-1]
 
+      # SOUTH
+      if map_tile_y_diff < 0:
+        print("map_tile_y_diff < 0")
+        while map_tile_y_diff < 0:
+          bottom_side_y_axis = self.map_tile_y + self.visible_map_height_half
+          # # If Even
+          # if (self.visible_map_height % 2) == 0:
+          #   top_side_y_axis = self.map_tile_y - self.visible_map_height_half #- 1
+          # else:
+          #   top_side_y_axis = self.map_tile_y - self.visible_map_height_half - 1
+          print("bottom_side_y_axis: " + str(bottom_side_y_axis))
+
+          self.visible_map_tiles_matrix.append([None for i in range(self.visible_map_width)])
+
+          for x_axis in range(0, self.visible_map_width):
+            # STILL NEEDS THAT MAGIC 2... do we need to factor in the extra width here?
+            map_data_x_offset = self.map_tile_x + (x_axis - self.visible_map_height_half) - 2
+
+            cell = None
+            if bottom_side_y_axis < self.map_tile_height:
+              print("bottom_side_y_axis: " + str(bottom_side_y_axis) + " in length: " + str(len(self.map_data)))
+              print("map_data_x_offset: " + str(map_data_x_offset) + " in length: " + str(len(self.map_data[bottom_side_y_axis])))
+              if map_data_x_offset >= 0 and map_data_x_offset < self.map_tile_width:
+                cell = self.map_data[bottom_side_y_axis][map_data_x_offset]['map_tile']
+              
+
+            self.visible_map_tiles_matrix[-1][x_axis] = cell
+          self.map_tile_y = self.map_tile_y + 1
+          map_tile_y_diff = map_tile_y_diff + 1
+          del self.visible_map_tiles_matrix[0]
 
   def on_draw(self):
     drawable_list = []
