@@ -47,8 +47,8 @@ class Background(object):
       print("expected 3, found " + str(cell.map_tile_y))
       raise "CELL DID NOT MATCH Y"
 
-    self.map_pixel_width  = round(self.map_tile_height  * self.tile_height_and_width)
-    self.map_pixel_height = round(self.map_tile_width   * self.tile_height_and_width)
+    self.map_pixel_width  = round(self.map_tile_height * self.tile_height_and_width)
+    self.map_pixel_height = round(self.map_tile_width  * self.tile_height_and_width)
 
 
     # print("MAP DATA")
@@ -106,38 +106,49 @@ class Background(object):
 
       # map_tile_y_diff = self.map_tile_y - self.camera.map_tile_y
 
-      # WEST.. Adds to the top of the visible map.
-      if map_tile_x_diff > 0:
-        print("map_tile_x_diff > 0")
-        x_offset = self.map_tile_x - self.visible_map_width_half - 1
-        print("X OFFSET, should be 95 or less: " + str(x_offset))
-        self.visible_map_tiles_matrix.insert(0, [None for i in range(self.visible_map_width)])
-        # self.map_tile_width: 120
-        print("MAP TILE Y: " + str(self.map_tile_y))
-        for y_offset in range(0, self.visible_map_height):
-            # x_with_offset = self.map_tile_x + self.visible_map_width_half - w
-            # x_with_offset = self.map_tile_x + (w - self.visible_map_width_half)
-            # this is being used on the Y...
-            y_offset_offset = self.map_tile_y - (y_offset - self.visible_map_height_half)
-            print("y_offset_offset: " + str(y_offset_offset))
-            print("INSERTING VISIBLE TIPE: " + str(0) + ',' + str(y_offset) + ' with map: ' + str(x_offset) + ',' + str(y_offset_offset))
-            # INSERTING VISIBLE TIPE: 0,4 with map: 100,93
-            self.visible_map_tiles_matrix[0][y_offset] = self.map_data[y_offset_offset][x_offset]['map_tile']
-            self.visible_map_tiles_matrix[0][y_offset].debug(0, y_offset, True, x_offset, y_offset_offset)
-        self.map_tile_x = self.map_tile_x - 1
-      # # WEST
+      # # WEST Adds to the left, but not in the right way, cuts bottom
       # if map_tile_x_diff > 0:
+      #   print("map_tile_x_diff > 0")
       #   x_offset = self.map_tile_x - self.visible_map_width_half - 1
+      #   print("X OFFSET, should be 95 or less: " + str(x_offset))
+      #   self.visible_map_tiles_matrix.insert(0, [None for i in range(self.visible_map_width)])
+      #   # self.map_tile_width: 120
       #   print("MAP TILE Y: " + str(self.map_tile_y))
       #   for y_offset in range(0, self.visible_map_height):
-      #     visible_map_y_offset = self.visible_map_height - (y_offset + 1)
-      #     map_data_y_offset = self.map_tile_y - (y_offset - self.visible_map_height_half)
-      #     cell = self.map_data[map_data_y_offset][x_offset]['map_tile']
-      #     print("visible_map_y_offset: " + str(visible_map_y_offset))
-      #     print("vis map length: " + str(len(self.visible_map_tiles_matrix)))
-      #     self.visible_map_tiles_matrix[visible_map_y_offset].insert(0, cell)
-      #     # self.visible_map_tiles_matrix[visible_map_y_offset].append(cell)
+      #       # x_with_offset = self.map_tile_x + self.visible_map_width_half - w
+      #       # x_with_offset = self.map_tile_x + (w - self.visible_map_width_half)
+      #       # this is being used on the Y...
+      #       y_offset_offset = self.map_tile_y - (y_offset - self.visible_map_height_half)
+      #       print("y_offset_offset: " + str(y_offset_offset))
+      #       print("INSERTING VISIBLE TIPE: " + str(0) + ',' + str(y_offset) + ' with map: ' + str(x_offset) + ',' + str(y_offset_offset))
+      #       # INSERTING VISIBLE TIPE: 0,4 with map: 100,93
+      #       self.visible_map_tiles_matrix[0][y_offset] = self.map_data[y_offset_offset][x_offset]['map_tile']
+      #       self.visible_map_tiles_matrix[0][y_offset].debug(0, y_offset, True, x_offset, y_offset_offset)
+
+      #       cell = self.visible_map_tiles_matrix[0][y_offset]
+      #       if cell.map_tile_x != x_offset:
+      #         print("expected " + x_offset + ", found " + str(cell.map_tile_x))
+      #         raise "CELL DID NOT MATCH X"
+      #       if cell.map_tile_y != y_offset_offset:
+      #         print("expected " + y_offset_offset + ", found " + str(cell.map_tile_y))
+      #         raise "CELL DID NOT MATCH Y"
+
+
+      #   # del self.visible_map_tiles_matrix[-1]
       #   self.map_tile_x = self.map_tile_x - 1
+      # WEST
+      if map_tile_x_diff > 0:
+        left_side_x_axis = self.map_tile_x - self.visible_map_width_half - 1
+        print("left_side_x_axis: " + str(left_side_x_axis))
+        for left_side_y_axis in range(0, self.visible_map_height):
+          
+          map_data_y_offset = self.map_tile_y + (left_side_y_axis - self.visible_map_height_half)
+
+          cell = self.map_data[map_data_y_offset][left_side_x_axis]['map_tile']
+
+          self.visible_map_tiles_matrix[left_side_y_axis].insert(0, cell)
+          # self.visible_map_tiles_matrix[visible_map_y_offset].append(cell)
+        self.map_tile_x = self.map_tile_x - 1
 
 
         
