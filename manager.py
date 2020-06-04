@@ -89,26 +89,43 @@ from models.scene_base import SceneBase
 from lib.clock import Clock
 import time
 
-
 class Manager():
-    FPS = 60
+    DEFAULT_FPS = 60
 
     # OPENGL = False, makes it full screen.
-    def __init__(self, opengl = True, width=None, height=None, cols=None, rows=None, tile_size=None,
-        limit_fps=None, window_color=None
+    def __init__(
+        self, opengl = True, width = None,
+        height = None, cols = None, rows = None, 
+        tile_size = None, limit_fps = None,
+        window_color = None
     ):
         self.width = width or SCREEN_WIDTH
         self.height = height or SCREEN_HEIGHT
-        self.limit_fps = limit_fps or LIMIT_FPS
-        print("FPS LIMIT: " + str(self.limit_fps))
+        self.limit_fps = 119#limit_fps or LIMIT_FPS
         self.window_color = window_color or WINDOW_COLOR
- 
+
+        if self.limit_fps == self.DEFAULT_FPS:
+            # print("self.limit_fps == self.DEFAULT_FPS")
+            set_global_fps_modifier(1)
+        else:
+            # 3 Precision
+            # print(str(self.limit_fps))
+            # print(str(self.DEFAULT_FPS))
+            set_global_fps_modifier(round(self.DEFAULT_FPS / self.limit_fps, 3))
+        # global global_fps_modifier
+        # global_fps_modifier = fps_modifier
+        print("FPS LIMIT: " + str(self.limit_fps) + " with modifier " + str(get_global_fps_modifier()))
+
+
+        # test = get_global_fps_modifier()
+        # print("HOT HERE: " + str(test))
+        # raise "stop here"
 
         # Initialize with no scene
         self.scene = None
 
-        # self.show_fps = True
-        self.show_fps = False
+        self.show_fps = True
+        # self.show_fps = False
 
         if opengl:
             # No hardware accelerated renderers available, on python 3.7
@@ -181,6 +198,7 @@ class Manager():
     def run(self):
         # Calculate our framerate.
         tick = 0
+        update_tick = 0
         if self.show_fps:
             time_new = time.time()
             time_old = time.time()
@@ -196,6 +214,7 @@ class Manager():
             self.clock.tick(self.limit_fps)
             self.on_event()
             self.on_update()
+
             if self.show_fps:
                 if len(time_track) == 60:
                     average = sum(time_track) / len(time_track)

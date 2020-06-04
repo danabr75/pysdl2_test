@@ -29,6 +29,7 @@ class MapTile(object):
     self.map_text5 = None
 
   def debug(self, start_visible_map_x, start_visible_map_y, debug_val = False, retrieved_x=None, retrieved_y=None):
+    pass
     self.debug_val = debug_val
     self.start_visible_map_x = start_visible_map_x
     self.start_visible_map_y = start_visible_map_y

@@ -52,3 +52,18 @@ ARIAL_RED_WHITE  = sdl2.ext.FontManager(font_path = RESOURCES.get_path("arial.tt
 TILE_WIDTH_AND_HEIGHT = round(SCREEN_HEIGHT // VISIBLE_MAP_TILE_HEIGHT)
 
 
+global global_fps_modifier
+global_fps_modifier = 1
+
+def get_global_fps_modifier():
+  global global_fps_modifier
+  return global_fps_modifier
+
+def set_global_fps_modifier(value):
+  global global_fps_modifier
+  global_fps_modifier = value
+  return global_fps_modifier
+  
+
+
+

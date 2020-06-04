@@ -5,6 +5,8 @@ from models.sprite import Sprite
 from models.text import Text
 import math
 
+# import time
+
 class Player(object):
   def __init__(self, scene):
     self.scene = scene
@@ -40,9 +42,12 @@ class Player(object):
     self.player_text = Text(self.scene, "...", self.x, self.y, Z_ORDER.PlayerUI)
     self.player_text2 = Text(self.scene, "...", self.x, self.y, Z_ORDER.PlayerUI)
 
+    # self.last_update = None
+    # self.num_of_updates = 0
+
   def rotate_clockwise(self):
     if self.controls_enabled:
-      increment = self.rotation_speed #* @fps_scaler
+      increment = self.get_rotation_speed()
       if self.angle + increment >= MAX_ROTATIONAL_ANGLE:
         self.angle = (self.angle + increment) - MAX_ROTATIONAL_ANGLE
       else:
@@ -50,18 +55,27 @@ class Player(object):
 
   def rotate_counterclockwise(self):
     if self.controls_enabled:
-      increment = self.rotation_speed# * @fps_scaler
+      increment = self.get_rotation_speed()
       if self.angle - increment <= 0:
         self.angle = (self.angle - increment) + MAX_ROTATIONAL_ANGLE
       else:
         self.angle -= increment        
 
+  def get_rotation_speed(self):
+    return round(self.rotation_speed * get_global_fps_modifier())
+
   def move_forward(self):
-    self.movement(self.speed, self.angle / 100)
+    self.movement(self.get_speed(), self.angle / 100)
 
   def move_backward(self):
     # pass
-    self.movement(self.speed / -3, self.angle / 100)
+    self.movement(self.get_speed(-0.3), self.angle / 100)
+
+  def get_speed(self, modifier = None):
+    if modifier:
+      return self.speed * get_global_fps_modifier() * modifier
+    else:
+      return self.speed * get_global_fps_modifier()
 
   def movement(self, speed, angle):
     base_speed = speed #* @height_scale * @fps_scaler
@@ -76,14 +90,27 @@ class Player(object):
     # print("NEW X, OLD Y: " + str([self.x, self.y]))
     # print("POS X, POS Y: " + str([testx, testy]))
 
-
   def on_update(self):
+    # # print("PLAYER ON UPDATE: " + str(self.last_update))
+    # if self.last_update == None:
+    #   self.last_update = time.time()
+
+    # time_diff = int(time.time() - self.last_update)
+    # # print("DIFF: " + str(time_diff))
+    # # seconds = (time_diff / 60) / 60
+    # # print("SECONDS HERE IN DIFF: " + str(seconds))
+    # if time_diff >= 10:
+    #   print("PLAYER HAD " + str(round(self.num_of_updates / 10)) + " per second")
+    #   self.num_of_updates = 0
+    #   self.last_update = time.time()
+    # else:
+    #   self.num_of_updates += 1
+
     # self.update_sprite()
     # Always center of screen.
 
     # self.x, self.y = [ round(SCREEN_WIDTH // 2), round(SCREEN_HEIGHT // 2) ]
     self.x, self.y = self.scene.get_x_and_y_pos_from_camera(self)
-
 
     # self.h_h = round(self.h // 2)
     # self.h_w = round(self.w // 2)
