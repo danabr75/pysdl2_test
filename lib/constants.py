@@ -65,6 +65,57 @@ def set_global_fps_modifier(value):
   global_fps_modifier = value
   return global_fps_modifier
   
+global screen_height
+global screen_width
+screen_height = None
+screen_width = None
 
+global screen_height_with_buffer
+global screen_bottom_with_buffer
+global screen_width_with_buffer
+global screen_left_with_buffer
+
+screen_height_with_buffer = None
+screen_bottom_with_buffer = None
+screen_width_with_buffer = None
+screen_left_with_buffer = None
+
+def get_screen_height():
+  global screen_height
+  return screen_height
+
+def get_screen_width():
+  global screen_width
+  return screen_width
+
+def get_screen_height_with_buffer():
+  global screen_height_with_buffer
+  return screen_height_with_buffer
+
+def get_screen_width_with_buffer():
+  global screen_width_with_buffer
+  return screen_width_with_buffer
+
+def screen_bottom_with_buffer():
+  global screen_bottom_with_buffer
+  return screen_bottom_with_buffer
+
+def screen_left_with_buffer():
+  global screen_left_with_buffer
+  return screen_left_with_buffer
+
+def set_screen_dimensions(width, height):
+  global screen_width
+  global screen_height
+  global screen_height_with_buffer
+  global screen_bottom_with_buffer
+  global screen_width_with_buffer
+  global screen_left_with_buffer
+  screen_width  = width
+  screen_height = height
+  screen_height_with_buffer = round(width * 1.2)
+  screen_bottom_with_buffer = height - screen_height_with_buffer
+  screen_width_with_buffer = round(height * 1.2)
+  screen_left_with_buffer = width - screen_width_with_buffer
 
 

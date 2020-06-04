@@ -36,7 +36,7 @@ class Player(object):
 
     self.controls_enabled = True
     self.rotation_speed = 150
-    self.speed = 8
+    self.speed = 5
     self.angle = 0
 
     self.player_text = Text(self.scene, "...", self.x, self.y, Z_ORDER.PlayerUI)

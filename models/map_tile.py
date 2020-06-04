@@ -15,7 +15,7 @@ class MapTile(object):
 
      # int(object.map_tile_x * TILE_WIDTH_AND_HEIGHT), int(object.map_tile_y * TILE_WIDTH_AND_HEIGHT)
     self.map_x, self.map_y = self.scene.get_map_x_and_map_y_from_tile(self)
-    self.sprite = Sprite(self.scene, terrain, self.x, self.y, ZOrder.Background, self.h, self.w, 1)
+    self.sprite = Sprite(self.scene, terrain, self.x, self.y, ZOrder.Background, self.h, self.w, 1, True)
     self.map_text  = Text(self.scene, str(self.map_tile_x) + ',' + str(self.map_tile_y), self.x, self.y, Z_ORDER.BackgroundUI)
     self.map_text4 = Text(self.scene, str(self.map_x) + ',' + str(self.map_y), self.x, self.y, Z_ORDER.BackgroundUI)
     

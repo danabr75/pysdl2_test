@@ -101,7 +101,7 @@ class Manager():
     ):
         self.width = width or SCREEN_WIDTH
         self.height = height or SCREEN_HEIGHT
-        self.limit_fps = 70#limit_fps or LIMIT_FPS
+        self.limit_fps = 60#limit_fps or LIMIT_FPS
         self.window_color = window_color or WINDOW_COLOR
 
         if self.limit_fps == self.DEFAULT_FPS:
@@ -115,6 +115,8 @@ class Manager():
         # global global_fps_modifier
         # global_fps_modifier = fps_modifier
         print("FPS LIMIT: " + str(self.limit_fps) + " with modifier " + str(get_global_fps_modifier()))
+
+        set_screen_dimensions(self.width, self.height)
 
 
         # test = get_global_fps_modifier()

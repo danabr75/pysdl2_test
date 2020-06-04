@@ -45,7 +45,8 @@ class TextureRenderer(sdl2.ext.TextureSpriteRenderSystem):
         # count = 0
         for i in range(max_depth):
             for sprite_element in sprite_elements[i]:
-                # count += 1
+                if not sprite_element.is_on_screen():
+                    continue
                 sp = sprite_element.on_draw()
                 r.x = sp.x - sprite_element.h_w
                 r.y = sp.y - sprite_element.h_h

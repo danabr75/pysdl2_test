@@ -139,7 +139,7 @@ class Background(object):
       #   self.map_tile_x = self.map_tile_x - 1
       # WEST
       if map_tile_x_diff > 0:
-        while map_tile_x_diff > 0:
+        # while map_tile_x_diff > 0:
           # If Even
           if (self.visible_map_width % 2) == 0:
             left_side_x_axis = self.map_tile_x - self.visible_map_width_half - 1
@@ -162,7 +162,7 @@ class Background(object):
           map_tile_x_diff = map_tile_x_diff - 1
       # EAST
       if map_tile_x_diff < 0:
-        while map_tile_x_diff < 0:
+        # while map_tile_x_diff < 0:
           # If Even
           if (self.visible_map_width % 2) == 0:
             right_side_x_axis = self.map_tile_x + self.visible_map_width_half #- 1
@@ -187,7 +187,7 @@ class Background(object):
         
       # NORTH
       if map_tile_y_diff > 0:
-        while map_tile_y_diff > 0:
+        # while map_tile_y_diff > 0:
           top_side_y_axis = self.map_tile_y - self.visible_map_height_half - 1
           # # If Even
           # if (self.visible_map_height % 2) == 0:
@@ -218,7 +218,7 @@ class Background(object):
       # SOUTH
       if map_tile_y_diff < 0:
         # print("map_tile_y_diff < 0")
-        while map_tile_y_diff < 0:
+        # while map_tile_y_diff < 0:
           bottom_side_y_axis = self.map_tile_y + self.visible_map_height_half
           # # If Even
           # if (self.visible_map_height % 2) == 0:

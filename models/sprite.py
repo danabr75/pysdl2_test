@@ -5,11 +5,12 @@ from lib.constants import *
 # Couldn't set scale on entity. Can't add attributes to entities.
 # class Sprite(sdl2.ext.Entity):
 class Sprite(object):
-  def __init__(self, scene, asset, x, y, z, h = None, w = None, scale = DEFAULT_IMAGE_SCALE):
+  def __init__(self, scene, asset, x, y, z, h = None, w = None, scale = DEFAULT_IMAGE_SCALE, always_show = False):
     # super(Sprite, self).__init__()
     # sdl2.ext.Sprite
     self.scale = scale
     self.sprite = scene.factory.from_image(RESOURCES.get_path(asset))
+    self.always_show = always_show
 
     if h:
         self.h = int(h // self.scale)
@@ -39,7 +40,20 @@ class Sprite(object):
     self.sprite.depth = z
 
 
+  def is_on_screen(self):
+    # Need to factor in object width and height.
+    if self.always_show:
+        return True
+    elif self.sprite.y > screen_bottom_with_buffer() and self.sprite.y < get_screen_height_with_buffer() and self.sprite.x > screen_left_with_buffer() and self.sprite.x < get_screen_width_with_buffer():
+        return True
+    else:
+        return False
 
+  # def is_on_screen?
+  #   y_buffer = (@screen_pixel_height * 0.2)
+  #   x_buffer = (@screen_pixel_width  * 0.2)
+  #   @y > -y_buffer && @y < @screen_pixel_height + y_buffer && @x > -x_buffer && @x < @screen_pixel_width + x_buffer
+  # end
 
     # self.sprite.angle = 90
     # self.sprite.angle2 = 90
