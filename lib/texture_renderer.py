@@ -8,7 +8,7 @@ class TextureRenderer(sdl2.ext.TextureSpriteRenderSystem):
     def __init__(self, target):
         super(TextureRenderer, self).__init__(target)
 
-    def render(self, sprite_element, x=0, y=0):
+    def render(self, sprite_elements, max_depth):
         """Overrides the render method of sdl2.ext.TextureSpriteRenderSystem to
         use "SDL_RenderCopyEx" instead of "SDL_RenderCopy" to allow sprite
         rotation:
@@ -42,11 +42,15 @@ class TextureRenderer(sdl2.ext.TextureSpriteRenderSystem):
         r = rect.SDL_Rect(0, 0, 0, 0)
         rcopy = render.SDL_RenderCopyEx
         renderer = self.sdlrenderer
-        sp = sprite_element.on_draw()
-        r.x = x + sp.x - sprite_element.h_w
-        # r.x = x + sp.x + sprite_element.h_w
-        r.y = y + sp.y - sprite_element.h_h
-        r.w = sprite_element.w
-        r.h = sprite_element.h
-        if rcopy(renderer, sp.texture, None, r, sp.angle, None, render.SDL_FLIP_NONE) == -1:
-            raise SDLError()
+        # count = 0
+        for i in range(max_depth):
+            for sprite_element in sprite_elements[i]:
+                # count += 1
+                sp = sprite_element.on_draw()
+                r.x = sp.x - sprite_element.h_w
+                r.y = sp.y - sprite_element.h_h
+                r.w = sprite_element.w
+                r.h = sprite_element.h
+                if rcopy(renderer, sp.texture, None, r, sp.angle, None, render.SDL_FLIP_NONE) == -1:
+                    raise SDLError()
+        # print("DRAWABLE ITEMS: " + str(count))

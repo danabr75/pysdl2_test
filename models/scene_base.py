@@ -334,12 +334,14 @@ class SceneBase(sdl2.ext.World):
 
 
         # return [drawable_list, drawable_text_list]
-        for i in range(Z_ORDER.MAX_DEPTH):
-            for sprite_element in drawable_list[i]:
-                self.manager.spriterenderer.render(sprite_element = sprite_element)
-            if self.draw_text:
+        if self.draw_text:
+            for i in range(Z_ORDER.MAX_DEPTH):
+                # for sprite_element in drawable_list[i]:
+                #     self.manager.spriterenderer.render(sprite_element = sprite_element)
                 for text in drawable_text_list[i]:
                     self.manager.renderer.copy(text.value, dstrect = (text.x, text.y, text.value.size[0], text.value.size[1]))
+
+        self.manager.spriterenderer.render(drawable_list, Z_ORDER.MAX_DEPTH)
 
 
     # def on_draw_text(self):

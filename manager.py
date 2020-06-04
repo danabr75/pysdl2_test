@@ -101,7 +101,7 @@ class Manager():
     ):
         self.width = width or SCREEN_WIDTH
         self.height = height or SCREEN_HEIGHT
-        self.limit_fps = 119#limit_fps or LIMIT_FPS
+        self.limit_fps = 70#limit_fps or LIMIT_FPS
         self.window_color = window_color or WINDOW_COLOR
 
         if self.limit_fps == self.DEFAULT_FPS:
