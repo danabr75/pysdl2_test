@@ -1,6 +1,9 @@
 # See https://help.github.com/articles/ignoring-files for more about ignoring files.
 /.bundle
 **/__pycache/**/*.pyc
+/__pycache/**/*.pyc
+/__pycache/*.pyc
+**/__pycache/*.pyc
 .DS_Store
 **/.DS_Store
 .python-version
