@@ -53,11 +53,11 @@ from lib.constants import *
 # Add compiled versions of python files. `python -m compileall .` and move them alongside their original files.
 # Also had issues with constants.py. Need to fix asset pathing.
 #   - Might be fixed
-# pyinstaller --windowed --add-data="lib;lib" --add-data="models;models" --add-data="assets;assets" --add-data="vendor_lib;vendor_lib" run.py
+# pyinstaller --windowed --add-data="lib;lib" --add-data="models;models" --add-data="assets;assets" --add-data="maps;maps" --add-data="vendor_lib;vendor_lib" run.py
 # dist\run\run.exe
 
 # DEBUG: without windowed
-# pyinstaller --add-data="lib;lib" --add-data="models;models" --add-data="assets;assets" --add-data="vendor_lib;vendor_lib" run.py
+# pyinstaller --add-data="lib;lib" --add-data="models;models" --add-data="assets;assets" --add-data="maps;maps" --add-data="vendor_lib;vendor_lib" run.py
 # dist\run\run.exe
 
 
@@ -66,7 +66,7 @@ import sdl2
 import sdl2.ext
 
 # src: https://github.com/ShadowApex/pysdl2-example/blob/master/physics.py
-import sdl2.sdlgfx
+# import sdl2.sdlgfx
 from sdl2 import rect, render
 from sdl2.ext.compat import isiterable
 
