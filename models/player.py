@@ -6,10 +6,13 @@ from models.text import Text
 import math
 
 # import time
+# For testing.
+from pymunk.vec2d import Vec2d
 
 class Player(object):
   def __init__(self, scene):
     self.scene = scene
+
     self.map_tile_x = 100
     self.map_tile_y = 100
     # self.map_x, self.map_y = [None, None]
@@ -36,11 +39,36 @@ class Player(object):
 
     self.controls_enabled = True
     self.rotation_speed = 150
-    self.speed = 5
+
+
+    self.engine_speed_increase = 0.2
+    self.engine_current_speed  = 0
+    self.engine_speed_maximum  = 5 # Which is also the momentum maximum
+    self.maximum_momentum  = 100 # Which is also the momentum maximum
+    self.mass              = 500
+
+
     self.angle = 0
 
     self.player_text = Text(self.scene, "...", self.x, self.y, Z_ORDER.PlayerUI)
     self.player_text2 = Text(self.scene, "...", self.x, self.y, Z_ORDER.PlayerUI)
+
+
+    self.momentum_angles = {}
+
+    self.body = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
+
+    # self.body = self.scene.pymunk.Body(1,moment=66)
+    # self.shapes = [ self.scene.pymunk.Circle(body=self.body, radius=self.h_w) ]
+    # self.shapes[0].elasticity = .85
+    # self.shapes[0].friction - 0.5
+    # self.body.velocity = 0, 0
+    # self.body.position = Vec2d(
+    #   self.map_x, 
+    #   self.map_y
+    # )
+
+    # self.map_x, self.map_y
 
     # self.last_update = None
     # self.num_of_updates = 0
@@ -64,33 +92,79 @@ class Player(object):
   def get_rotation_speed(self):
     return round(self.rotation_speed * get_global_fps_modifier())
 
-  def move_forward(self):
-    self.movement(self.get_speed(), self.angle / 100)
+  def accelerate(self):
+    dv = Vec2d(1.2 * self.angle, 0.0)
+    self.body.velocity = self.body.rotation_vector.cpvrotate(dv)
+
+    # self.movement(self.get_speed(), self.angle / 100)
+    # print("ACCELERATE: " + str(self.engine_current_speed))
+    # self.engine_current_speed += self.engine_speed_increase
+    # if self.engine_current_speed > self.engine_speed_maximum:
+    #   self.engine_current_speed = self.engine_speed_maximum
+
+    # angle_key = str(self.angle // 100)
+    # self.momentum_angles[angle_key] = self.engine_current_speed #// self.mass
+
+    # # if angle_key in self.momentum_angles:
+    # #   self.momentum_angles[angle_key] += self.engine_current_speed // self.mass
+    # # else:
+    # #   self.momentum_angles[angle_key]  = self.engine_current_speed // self.mass
+
+    # if self.momentum_angles[angle_key] > self.maximum_momentum:
+    #   self.momentum_angles[angle_key] = self.maximum_momentum
+
+  DRAG = 1
+  DRAG_MOD = 0.95
+  MOMENTUM_TO_MAP_PIXEL_MOD = 0.1
+  def apply_momentum(self):
+    for angle in list(self.momentum_angles):
+      current_momentum = self.momentum_angles[angle]
+      print("ANGLE: " + str(angle) + ", for momentum: " + str(current_momentum) + " = speed: " + str(int(current_momentum * self.MOMENTUM_TO_MAP_PIXEL_MOD)))
+      self.movement(int(current_momentum * self.MOMENTUM_TO_MAP_PIXEL_MOD), int(angle))
+
+      if current_momentum < self.DRAG:
+        self.momentum_angles[angle] = (self.momentum_angles[angle] * self.DRAG_MOD) - self.DRAG
+        print("DELETING ANGLE 1")
+        del self.momentum_angles[angle]
+      else:
+        self.momentum_angles[angle] = (self.momentum_angles[angle] * self.DRAG_MOD) - self.DRAG
+        if self.momentum_angles[angle] <= 0:
+          print("DELETING ANGLE 2")
+          del self.momentum_angles[angle]
+
 
   def move_backward(self):
-    # pass
-    self.movement(self.get_speed(-0.3), self.angle / 100)
+    pass
+    # self.movement(self.get_speed(-0.3), self.angle / 100)
 
-  def get_speed(self, modifier = None):
-    if modifier:
-      return self.speed * get_global_fps_modifier() * modifier
-    else:
-      return self.speed * get_global_fps_modifier()
+  # return Float
+  # def get_speed(self, modifier = None):
+  #   if modifier:
+  #     return self.engine_speed_increase * get_global_fps_modifier() * modifier
+  #   else:
+  #     return self.engine_speed_increase * get_global_fps_modifier()
 
-  def movement(self, speed, angle):
-    base_speed = speed #* @height_scale * @fps_scaler
-    # print("ANGLE: " + str(angle))
-    step = (math.pi/180 * (angle - 90))
-    # print("STEP: " + str(step))
-    # print("OLD X, OLD Y: " + str([self.x, self.y]))
-    # testx = (math.cos(step) * base_speed + self.x)
-    # testy = (math.sin(step) * base_speed + self.y)
-    self.map_x = round(math.cos(step) * base_speed + self.map_x)
-    self.map_y = round(math.sin(step) * base_speed + self.map_y)
-    # print("NEW X, OLD Y: " + str([self.x, self.y]))
-    # print("POS X, POS Y: " + str([testx, testy]))
+  # def movement(self, speed, angle):
+  #   base_speed = speed #* @height_scale * @fps_scaler
+  #   # print("ANGLE: " + str(angle))
+  #   step = (math.pi/180 * (angle - 90))
+  #   # print("STEP: " + str(step))
+  #   # print("OLD X, OLD Y: " + str([self.x, self.y]))
+  #   # testx = (math.cos(step) * base_speed + self.x)
+  #   # testy = (math.sin(step) * base_speed + self.y)
+  #   self.map_x = round(math.cos(step) * base_speed + self.map_x)
+  #   self.map_y = round(math.sin(step) * base_speed + self.map_y)
+  #   # print("NEW X, OLD Y: " + str([self.x, self.y]))
+  #   # print("POS X, POS Y: " + str([testx, testy]))
 
   def on_update(self):
+    print("PLAYER BODU  POSITION")
+    print(str(self.body.position))
+    # print("MAP POS")
+    # print(str([self.map_x, self.map_y]))
+    self.map_x = round(self.body.position[0])
+    self.map_y = round(self.body.position[1])
+    # self.apply_momentum()
     # # print("PLAYER ON UPDATE: " + str(self.last_update))
     # if self.last_update == None:
     #   self.last_update = time.time()
@@ -136,7 +210,10 @@ class Player(object):
       self.move_down = False
     elif keystatus[sdl2.SDL_SCANCODE_W]:
       # self.y -= 1
-      self.move_forward()
+      # self.accelerate()
+      # self.body.velocity.y = min(self.body.velocity.y, 2)
+      x, y = self.body.position
+      self.body.position = Vec2d(x, y - 5)
       self.move_up   = True
       self.move_down = False
     elif keystatus[sdl2.SDL_SCANCODE_S]:

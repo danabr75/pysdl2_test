@@ -52,6 +52,7 @@ ARIAL_RED_WHITE  = sdl2.ext.FontManager(font_path = RESOURCES.get_path("arial.tt
 
 TILE_WIDTH_AND_HEIGHT = round(SCREEN_HEIGHT // VISIBLE_MAP_TILE_HEIGHT)
 
+COLLISION_SHIP_LEVEL = 0
 
 global global_fps_modifier
 global_fps_modifier = 1

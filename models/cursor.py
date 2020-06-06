@@ -3,6 +3,9 @@ import sdl2.ext
 from lib.constants import *
 from models.sprite import Sprite
 
+# For testing.
+from pymunk.vec2d import Vec2d
+
 class Cursor(object):
   def __init__(self, scene):
     # Show Hide Cursor
@@ -23,25 +26,41 @@ class Cursor(object):
 
     self.scene = scene
 
+    self.map_x, self.map_y = self.scene.get_map_x_and_map_y_from_x_and_y(self)
+    self.mass = 200
+    self.body = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
+
+
+
 
   def on_mouse_drag(self, event, x, y, dx, dy, button):
       # self.sprite.position = (x, y)
+      # self.map_x, self.map_y = self.scene.get_map_x_and_map_y_from_x_and_y(self)
+      # self.body.position = Vec2d(self.map_x, self.map_y)
+      # print("MOUSEE BODU  POSITION")
+      # print(str(self.body.position))
+      # print("MOUSE MAP POS")
+      # print(str([self.map_x, self.map_y]))
       self.unclicked_sprite.on_update(x, y)
       self.clicked_sprite.on_update(x, y)
+      self.x = x
+      self.y = y
 
   def on_mouse_motion(self, event, x, y, dx, dy):
       # self.sprite.position = (x, y)
       self.unclicked_sprite.on_update(x, y)
       self.clicked_sprite.on_update(x, y)
+      self.x = x
+      self.y = y
 
   def on_mouse_press(self, event, x, y, button, double):
       # print("on_mouse_press")
       if self.is_clicked == False:
-          print("PRESS TRIGGERED AT: " + str([x, y]))
+          # print("PRESS TRIGGERED AT: " + str([x, y]))
           self.is_clicked = True
           # print(self.is_clicked)
           self.sprite = self.clicked_sprite
-          self.scene.background.print_visible_map()
+          # self.scene.background.print_visible_map()
 
   def on_mouse_release(self, event, x, y, button, double):
       # print("on_mouse_release")
@@ -52,7 +71,15 @@ class Cursor(object):
           self.sprite = self.unclicked_sprite
 
   def on_update(self):
-    pass
+    # pass
+    print("mouse x and y: ")
+    print(str([self.x, self.y]))
+    self.map_x, self.map_y = self.scene.get_map_x_and_map_y_from_x_and_y(self)
+    print("self.scene.get_map_x_and_map_y_from_x_and_y")
+    print(str([self.map_x, self.map_y]))
+    self.body.position = Vec2d(self.map_x, self.map_y)
+    print("MOUSEE BODU  POSITION")
+    print(str(self.body.position))
 
   def on_draw(self):
     return [self.sprite]
