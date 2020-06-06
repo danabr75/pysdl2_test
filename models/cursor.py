@@ -28,7 +28,9 @@ class Cursor(object):
 
     self.map_x, self.map_y = self.scene.get_map_x_and_map_y_from_x_and_y(self)
     self.mass = 200
-    self.body = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
+    # self.body = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
+    self.shape = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
+    self.body = self.shape.body
 
 
 
@@ -72,14 +74,14 @@ class Cursor(object):
 
   def on_update(self):
     # pass
-    print("mouse x and y: ")
-    print(str([self.x, self.y]))
+    # print("mouse x and y: ")
+    # print(str([self.x, self.y]))
     self.map_x, self.map_y = self.scene.get_map_x_and_map_y_from_x_and_y(self)
-    print("self.scene.get_map_x_and_map_y_from_x_and_y")
-    print(str([self.map_x, self.map_y]))
+    # print("self.scene.get_map_x_and_map_y_from_x_and_y")
+    # print(str([self.map_x, self.map_y]))
     self.body.position = Vec2d(self.map_x, self.map_y)
-    print("MOUSEE BODU  POSITION")
-    print(str(self.body.position))
+    # print("MOUSEE BODU  POSITION")
+    # print(str(self.body.position))
 
   def on_draw(self):
     return [self.sprite]

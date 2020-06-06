@@ -56,7 +56,9 @@ class Player(object):
 
     self.momentum_angles = {}
 
-    self.body = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
+    # self.body = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
+    self.shape = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
+    self.body = self.shape.body
 
     # self.body = self.scene.pymunk.Body(1,moment=66)
     # self.shapes = [ self.scene.pymunk.Circle(body=self.body, radius=self.h_w) ]
@@ -93,8 +95,11 @@ class Player(object):
     return round(self.rotation_speed * get_global_fps_modifier())
 
   def accelerate(self):
-    dv = Vec2d(1.2 * self.angle, 0.0)
-    self.body.velocity = self.body.rotation_vector.cpvrotate(dv)
+    print("ACCELLERATE")
+    # self.shape.body.apply_force_at_local_point((0, 4000), (self.map_x, self.map_y))
+    self.shape.body.apply_force_at_local_point((0, -4000), (0, 0))
+    # dv = Vec2d(1.2 * self.angle, 0.0)
+    # self.body.velocity = self.body.rotation_vector.cpvrotate(dv)
 
     # self.movement(self.get_speed(), self.angle / 100)
     # print("ACCELERATE: " + str(self.engine_current_speed))
@@ -158,8 +163,8 @@ class Player(object):
   #   # print("POS X, POS Y: " + str([testx, testy]))
 
   def on_update(self):
-    print("PLAYER BODU  POSITION")
-    print(str(self.body.position))
+    # print("PLAYER BODU  POSITION")
+    # print(str(self.body.position))
     # print("MAP POS")
     # print(str([self.map_x, self.map_y]))
     self.map_x = round(self.body.position[0])
@@ -210,10 +215,10 @@ class Player(object):
       self.move_down = False
     elif keystatus[sdl2.SDL_SCANCODE_W]:
       # self.y -= 1
-      # self.accelerate()
+      self.accelerate()
       # self.body.velocity.y = min(self.body.velocity.y, 2)
-      x, y = self.body.position
-      self.body.position = Vec2d(x, y - 5)
+      # x, y = self.body.position
+      # self.body.position = Vec2d(x, y - 5)
       self.move_up   = True
       self.move_down = False
     elif keystatus[sdl2.SDL_SCANCODE_S]:

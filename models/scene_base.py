@@ -127,10 +127,12 @@ class SceneBase(sdl2.ext.World):
         shape.friction = 0.5
         shape.elasticity = .85
         shape.collision_type = collision_type
+        shape.body = body
 
         self.space.add(body, shape)
         
-        return body
+        # return body
+        return shape
 
     # https://github.com/viblo/pymunk/blob/8a7809a2428cd705e3d9582d776fdf0ca037538a/examples/tank.py#L38
     def update_space(self, dt):
