@@ -219,12 +219,14 @@ class Player(object):
       print("AND GOT FORCE: ")
       print(force)
       force = force * 10
+      # print("AND GOT FORCE * 10: ")
+      # print(force)
       # print("FORCE HERE")
       # print(force)
       # [0.7630730056839626, -0.64631229912206]
       # self.body.apply_force_at_local_point((10, 10), (x, y))
       # self.body.apply_force_at_local_point(force, (diff_x, diff_y))
-      self.body.apply_impulse_at_local_point(force, (0, 0))
+      self.body.apply_force_at_world_point(force, self.body.position)
       # self.body.apply_force_at_local_point(force, force_from_pos)
 
 
@@ -241,12 +243,12 @@ class Player(object):
 
       # self.body.apply_force_at_local_point((self.bottom_x_force, 0), (0, self.h))
     if self.move_right:
-      self.body.apply_impulse_at_local_point((-6, 0), (0, self.h_h))
-      self.body.apply_impulse_at_local_point((6, 0), (0, -self.h_h))
+      self.body.apply_impulse_at_world_point((-9, 0), (self.body.position[0], self.body.position[1] + self.h_h))
+      self.body.apply_impulse_at_world_point((9, 0), (self.body.position[0], self.body.position[1] - self.h_h))
     elif self.move_left:
       print("MOVE LEFT")
-      self.body.apply_impulse_at_local_point((9, 0), (0, self.h_h))
-      self.body.apply_impulse_at_local_point((-9, 0), (0, -self.h_h))
+      self.body.apply_impulse_at_world_point((9, 0), (self.body.position[0], self.body.position[1] + self.h_h))
+      self.body.apply_impulse_at_world_point((-9, 0), (self.body.position[0], self.body.position[1] - self.h_h))
 
       # p0 = Vec2d(self.body.position)
       # p1 = from_pygame(event.pos, self.screen)
@@ -329,30 +331,30 @@ class Player(object):
         self.move_down = False
         self.y_force = 0
 
-      if keystatus[sdl2.SDL_SCANCODE_D] and keystatus[sdl2.SDL_SCANCODE_A]:
-        self.move_left  = False
-        self.move_right = False
-        # self.top_x_force    = 0
-        # self.bottom_x_force = 0
-      elif keystatus[sdl2.SDL_SCANCODE_D]:
-        # self.rotate_clockwise()
-        self.move_left  = False
-        self.move_right = True
-        # self.top_x_force    =  50
-        # self.bottom_x_force = -50
-        # self.x += 1
-      elif keystatus[sdl2.SDL_SCANCODE_A]:
-        # self.rotate_counterclockwise()
-        self.move_left  = True
-        self.move_right = False
-        # self.x -= 1
-        # self.top_x_force    = -50
-        # self.bottom_x_force =  50
-      else:
-        self.move_left  = False
-        self.move_right = False
-        # self.top_x_force    = 0
-        # self.bottom_x_force = 0
+    if keystatus[sdl2.SDL_SCANCODE_D] and keystatus[sdl2.SDL_SCANCODE_A]:
+      self.move_left  = False
+      self.move_right = False
+      # self.top_x_force    = 0
+      # self.bottom_x_force = 0
+    elif keystatus[sdl2.SDL_SCANCODE_D]:
+      # self.rotate_clockwise()
+      self.move_left  = False
+      self.move_right = True
+      # self.top_x_force    =  50
+      # self.bottom_x_force = -50
+      # self.x += 1
+    elif keystatus[sdl2.SDL_SCANCODE_A]:
+      # self.rotate_counterclockwise()
+      self.move_left  = True
+      self.move_right = False
+      # self.x -= 1
+      # self.top_x_force    = -50
+      # self.bottom_x_force =  50
+    else:
+      self.move_left  = False
+      self.move_right = False
+      # self.top_x_force    = 0
+      # self.bottom_x_force = 0
 
   def on_key_press(self, event, sym, mod):
     pass

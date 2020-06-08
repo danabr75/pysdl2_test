@@ -195,7 +195,7 @@ class SceneBase(sdl2.ext.World):
 
     # http://www.pymunk.org/en/latest/overview.html
     def limit_velocity(self, body, gravity, damping, dt):
-        max_velocity = 150
+        max_velocity = 200
         pymunk.Body.update_velocity(body, gravity, damping, dt)
         l = body.velocity.length
         print("LIMIT PLAYER VELOCITY")
