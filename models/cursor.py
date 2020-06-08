@@ -31,6 +31,7 @@ class Cursor(object):
     # self.body = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
     self.shape = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
     self.body = self.shape.body
+    self.x_force = 0
 
 
 
@@ -63,6 +64,7 @@ class Cursor(object):
           # print(self.is_clicked)
           self.sprite = self.clicked_sprite
           # self.scene.background.print_visible_map()
+          self.x_force = 5000
 
   def on_mouse_release(self, event, x, y, button, double):
       # print("on_mouse_release")
@@ -71,6 +73,7 @@ class Cursor(object):
           self.is_clicked = False
           # print("SETTING NEW SPRITE")
           self.sprite = self.unclicked_sprite
+          self.x_force = 0
 
   def on_update(self):
     # pass
@@ -80,6 +83,9 @@ class Cursor(object):
     # print("self.scene.get_map_x_and_map_y_from_x_and_y")
     # print(str([self.map_x, self.map_y]))
     self.body.position = Vec2d(self.map_x, self.map_y)
+
+    if self.x_force != 0:
+      self.scene.player.body.apply_force_at_local_point((self.x_force, 0), (self.map_x - self.scene.player.body.position[0], self.map_y - self.scene.player.body.position[1]))
     # print("MOUSEE BODU  POSITION")
     # print(str(self.body.position))
 

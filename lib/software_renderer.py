@@ -1,3 +1,4 @@
+import sdl2
 import sdl2.ext
 
 class SoftwareRenderer(sdl2.ext.SoftwareSpriteRenderSystem):
@@ -5,6 +6,5 @@ class SoftwareRenderer(sdl2.ext.SoftwareSpriteRenderSystem):
     super(SoftwareRenderer, self).__init__(window)
 
   def render(self, components):
-    raise "please don't use me"
     sdl2.ext.fill(self.surface, sdl2.ext.Color(0, 0, 0))
     super(SoftwareRenderer, self).render(components)

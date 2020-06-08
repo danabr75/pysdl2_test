@@ -158,6 +158,7 @@ class Manager():
         # self.spriterenderer = self.factory.create_sprite_render_system(self.window)
         # Switching over to new renderer for sprite rotation.
         self.spriterenderer = TextureRenderer(self.renderer)
+        # self.software_renderer = SoftwareRenderer(self.window)
  
         # Enforce window raising just to be sure.
         sdl2.SDL_RaiseWindow(self.window.window)

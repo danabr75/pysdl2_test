@@ -48,7 +48,7 @@ class MapTile(object):
             raise "STOP"
 
   def on_update(self, h, w):
-    self.x, self.y = self.scene.get_x_and_y_pos_from_camera(self)
+    self.x, self.y = self.scene.get_x_and_y_pos_from_camera(self.map_x, self.map_y)
     if self.debug_val:
         # object.map_x
         print("GOT X,Y: " + str(self.x) + ',' + str(self.y) + " from map: " + str(self.map_x) + ',' + str(self.map_y))

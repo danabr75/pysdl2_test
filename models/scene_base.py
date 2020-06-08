@@ -45,13 +45,18 @@ class SceneBase(sdl2.ext.World):
         self.pymunk = pymunk
         self.space = self.pymunk.Space()
         self.space.iterations = 10
-        self.space.sleep_time_threshold = 0.5
+        # self.space.sleep_time_threshold = 0.5
+        # static_body
+        #   A dedicated static body for the space.
+        #   You don’t have to use it, but because its memory is managed automatically with the space its very convenient.
         self.static_body = self.space.static_body
         self.space.gravity = 0.0, 0.0
 
         # fname = RESOURCES.get_path("cursor.png")
         fname = RESOURCES.get_path("cursor.png")
         player = Player(self)
+        # For testing
+        self.player = player
         self.camera = CameraPOV(player, self)
         self.background = Background(self, self.manager.width, self.manager.height)
  
@@ -78,10 +83,6 @@ class SceneBase(sdl2.ext.World):
 
         self.draw_text = False
 
-
-
-        # self.background.map_pixel_width  
-        # self.background.map_pixel_height
         # EDGES OF MAP
         shape = self.pymunk.Segment(self.static_body, (1,1), (1,self.background.map_pixel_height), 1.0)
         self.space.add(shape)
@@ -114,25 +115,106 @@ class SceneBase(sdl2.ext.World):
         print("test")
         return True
  
+    def add_box2(self, space, posX, posY):
+        global screen
+        self.size= 30
+        self.points = [(-self.size, -self.size), (-self.size, self.size), (self.size,self.size), (self.size, -self.size)]
+        self.mass = 0.3
+        # Moment of inertia (MoI or sometimes just moment) of the body.
+        # The moment is like the rotational mass of a body.
+        self.moment = pm.moment_for_poly(self.mass, self.points, (0,0))
+
+        self.body = pm.Body(self.mass, self.moment)
+        self.body.position = Vec2d(posX, posY)
+        #print("Box a {0}".format(self.body.position))
+        self.rect.center = to_pygame(self.body.position)
+        #print("Box b {0}".format(self.rect))
+        self.shape = pm.Poly(self.body, self.points, (0,0))
+        self.shape.friction = 1
+        #self.shape.group = 1
+
+        space.add(self.body, self.shape)
+
+
+    # https://pymunk-tutorial.readthedocs.io/en/latest/joint/joint.html
     # https://github.com/viblo/pymunk/blob/8a7809a2428cd705e3d9582d776fdf0ca037538a/examples/tank.py#L38
     def add_box(self, map_x, map_y, w, h, mass, collision_type):
         # radius = Vec2d(w, h).length
-
-        body = self.pymunk.Body()
-
+        
+        points = [Vec2d(-w // 2, -h // 2), Vec2d(-w // 2, h // 2), Vec2d(w // 2, h // 2), Vec2d(w // 2, -h // 2)]
+        moment = self.pymunk.moment_for_poly(mass, points, (0,0))
+        # http://www.pymunk.org/en/latest/pymunk.html
+        # http://www.pymunk.org/en/latest/_modules/pymunk/body.html
+        # body = self.pymunk.Body(mass, moment)
+        # pymunk.Body.update_velocity(body, (0,0), 0, 1)
+        body = self.pymunk.Body(1, 10)
+        body.velocity_func = self.limit_velocity
         body.position = Vec2d(map_x, map_y)
-        # adding * 30 to test
-        shape = self.pymunk.Poly.create_box(body, (w, h), 0.0)
-        shape.mass = mass
-        shape.friction = 0.5
-        shape.elasticity = .85
+
+
+        shape = self.pymunk.Poly(body, points)
+        # Pymunk uses the Coulomb friction model, a value of 0.0 is frictionless.
+        shape.friction = 1
+        # A value of 0.0 gives no bounce, while a value of 1.0 will give a 'perfect' bounce.
+        shape.elasticity = 0.20
         shape.collision_type = collision_type
         shape.body = body
+
+        # print("SHAPTE")
+        # print(shape.bb)
 
         self.space.add(body, shape)
         
         # return body
         return shape
+
+    # # https://github.com/viblo/pymunk/blob/8a7809a2428cd705e3d9582d776fdf0ca037538a/examples/tank.py#L38
+    # def add_box_v0(self, map_x, map_y, w, h, mass, collision_type):
+    #     # radius = Vec2d(w, h).length
+
+    #     # http://www.pymunk.org/en/latest/pymunk.html
+    #     body = self.pymunk.Body()
+
+    #     body.velocity_func = self.limit_velocity
+
+    #     body.position = Vec2d(map_x, map_y)
+    #     # adding * 30 to test
+    #     shape = self.pymunk.Poly.create_box(body, (w, h), 0.0)
+    #     shape.mass = mass
+    #     # Pymunk uses the Coulomb friction model, a value of 0.0 is frictionless.
+    #     shape.friction = 100000.0
+    #     # A value of 0.0 gives no bounce, while a value of 1.0 will give a 'perfect' bounce.
+    #     shape.elasticity = 0.20
+    #     shape.collision_type = collision_type
+    #     shape.body = body
+
+    #     self.space.add(body, shape)
+        
+    #     # return body
+    #     return shape
+
+    # http://www.pymunk.org/en/latest/overview.html
+    def limit_velocity(self, body, gravity, damping, dt):
+        max_velocity = 150
+        pymunk.Body.update_velocity(body, gravity, damping, dt)
+        l = body.velocity.length
+        print("LIMIT PLAYER VELOCITY")
+        print(l)
+        if l > max_velocity:
+            scale = max_velocity / l
+            body.velocity = body.velocity * scale
+
+        l = body.angular_velocity
+        max_angular_velocity = 10.0
+        if l != 0.0:
+            if l > max_angular_velocity:
+                scale = max_angular_velocity / l
+                body.angular_velocity = body.angular_velocity * scale
+            elif l < max_angular_velocity:
+                scale = max_angular_velocity / l
+                body.angular_velocity = body.angular_velocity * scale    
+
+
 
     # https://github.com/viblo/pymunk/blob/8a7809a2428cd705e3d9582d776fdf0ca037538a/examples/tank.py#L38
     def update_space(self, dt):
@@ -343,18 +425,16 @@ class SceneBase(sdl2.ext.World):
  
     # Only used by cursor, maybe fixed UI objects
     def get_map_x_and_map_y_from_x_and_y(self, object):
-        map_x = object.x + self.camera.map_x - SCREEN_WIDTH  // 2
-        map_y = object.y + self.camera.map_y - SCREEN_HEIGHT // 2
+        return [
+            int(object.x + self.camera.map_x - SCREEN_WIDTH  / 2),
+            int(object.y + self.camera.map_y - SCREEN_HEIGHT / 2)
+        ]
 
-        return [map_x, map_y]
-
-    def get_x_and_y_pos_from_camera(self, object):
-        # x = self.camera.map_x - object.map_x
-        # y = self.camera.map_y - object.map_y
-        x = object.map_x - self.camera.map_x + SCREEN_WIDTH  // 2
-        y = object.map_y - self.camera.map_y + SCREEN_HEIGHT // 2
-
-        return [x, y]
+    def get_x_and_y_pos_from_camera(self, map_x, map_y):
+        return [
+            int(map_x - self.camera.map_x + SCREEN_WIDTH  / 2),
+            int(map_y - self.camera.map_y + SCREEN_HEIGHT / 2)
+        ]
 
     def get_map_x_and_map_y_from_tile(self, object):
         return [
@@ -363,11 +443,11 @@ class SceneBase(sdl2.ext.World):
             int(object.map_tile_y * TILE_WIDTH_AND_HEIGHT)
         ]
 
-    def get_tile_x_and_tile_y_from_map(self, object):
+    def get_tile_x_and_tile_y_from_map(self, map_x, map_y):
         return [
             # Rounds down
-            int(object.map_x // TILE_WIDTH_AND_HEIGHT), 
-            int(object.map_y // TILE_WIDTH_AND_HEIGHT)
+            int(map_x / TILE_WIDTH_AND_HEIGHT), 
+            int(map_y / TILE_WIDTH_AND_HEIGHT)
         ]
 
 
@@ -426,7 +506,34 @@ class SceneBase(sdl2.ext.World):
                 for text in drawable_text_list[i]:
                     self.manager.renderer.copy(text.value, dstrect = (text.x, text.y, text.value.size[0], text.value.size[1]))
 
+
         self.manager.spriterenderer.render(drawable_list, Z_ORDER.MAX_DEPTH)
+
+
+        # test_drawable_list = []
+        # for element in self.drawable_elements:
+        #     for inner_element in element.on_draw():
+        #         test_drawable_list[inner_element.z].append(self.draw_bb(inner_element))
+        # self.manager.spriterenderer.render({0: test_drawable_list}, 1)
+        # self.manager.software_renderer.render(software_drawable_list)
+
+    # def draw_bb(self, shape):
+    #     # https://wiki.libsdl.org/SDL_Rect
+    #     x = shape.bb.left
+    #     y = shape.bb.top
+    #     w = shape.bb.right - shape.bb.left
+    #     h = shape.bb.top - shape.bb.bottom
+    #     r = rect.SDL_Rect(x, y, w, h)
+    #     return r
+    #     # rect = sdl2.rect.SDL_Rect
+    #     # sdl2.rect.SDL_Rect(x, y, w, h)
+    #     # pygame.draw.rect(self.screen, BLUE, (*p, w, h), 1)
+    #     # SDL_RenderDrawRect(SDL_Renderer *, SDL_Rect const *)
+
+    def draw_rects(surface, width, height):
+        pass
+        # Fill the whole surface with a black color.
+        # SDL_RenderDrawRect(SDL_Renderer *, SDL_Rect const *)
 
 
     def debug_draw(self, options = {}):
