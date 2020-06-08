@@ -56,7 +56,8 @@ class SceneBase(sdl2.ext.World):
         fname = RESOURCES.get_path("cursor.png")
         player = Player(self)
         # For testing
-        self.player = player
+        # self.player = player
+
         self.camera = CameraPOV(player, self)
         self.background = Background(self, self.manager.width, self.manager.height)
  
@@ -71,9 +72,10 @@ class SceneBase(sdl2.ext.World):
 
         self.logo_text = Text(self, "TEXT DRAWABLE", 0, 0, Z_ORDER.UI)
 
+        other_text_players = [Player(self, 99, 98), Player(self, 97, 98), Player(self, 97, 98)]
 
-        self.drawable_elements  = [player, cursor, self.background]
-        self.updatable_elements = [player, cursor, self.camera, self.background]
+        self.drawable_elements  = [player, cursor, self.background] + other_text_players
+        self.updatable_elements = [player, cursor, self.camera, self.background] + other_text_players
         self.key_listeners      = [player]
         self.mouse_listeners    = [cursor]
         self.occasional_updatable_elements = [player]

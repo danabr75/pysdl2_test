@@ -114,9 +114,9 @@ def set_screen_dimensions(width, height):
   global screen_left_with_buffer
   screen_width  = width
   screen_height = height
-  screen_height_with_buffer = round(width * 1.2)
+  screen_height_with_buffer = round(width * 1.6)
   screen_bottom_with_buffer = height - screen_height_with_buffer
-  screen_width_with_buffer = round(height * 1.2)
+  screen_width_with_buffer = round(height * 1.6)
   screen_left_with_buffer = width - screen_width_with_buffer
 
 

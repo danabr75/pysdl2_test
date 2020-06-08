@@ -13,11 +13,11 @@ class Player(object):
 
   MASS = 50
 
-  def __init__(self, scene):
+  def __init__(self, scene, map_tile_x = None, map_tile_y = None):
     self.scene = scene
 
-    self.map_tile_x = 100
-    self.map_tile_y = 100
+    self.map_tile_x = map_tile_x or 100
+    self.map_tile_y = map_tile_y or 100
     # self.map_x, self.map_y = [None, None]
     map_x, map_y = self.scene.get_map_x_and_map_y_from_tile(self)
     # print("PLAYER GOT HERE")
