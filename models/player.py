@@ -61,11 +61,21 @@ class Player(object):
 
     # self.body = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
     print("PLAYER BOX")
-    self.shape = self.scene.add_poly(map_x, map_y, self.w, self.h, self.MASS, COLLISION_SHIP_LEVEL)
+    self.shape = self.scene.add_poly(map_x, map_y, self.w, self.h, self.MASS, COLLISION_SHIP_LEVEL, self)
     self.body = self.shape.body
     self.forward_force = 0
     self.top_x_force = 0
     self.bottom_x_force = 0
+
+    self.health = 100
+
+  def is_alive(self):
+    self.health > 0
+
+  def take_damage(self, damage):
+    self.health -= damage
+    if self.health < 0:
+      self.health = 0 
 
     # self.body = self.scene.pymunk.Body(1,moment=66)
     # self.shapes = [ self.scene.pymunk.Circle(body=self.body, radius=self.h_w) ]
@@ -261,8 +271,8 @@ class Player(object):
       # self.body.apply_force_at_local_point((10, 0), (0, 30))
     else:
       # pass
-      if self.is_actual_player:
-        self.angle_brake()
+      # if self.is_actual_player:
+      self.angle_brake()
 
 
     # http://www.pymunk.org/en/latest/overview.html
@@ -274,7 +284,10 @@ class Player(object):
     self.map_tile_x, self.map_tile_y = self.scene.get_tile_x_and_tile_y_from_map(self.body.position[0], self.body.position[1])
 
   def on_draw(self):
-    return [self.sprite]
+    if self.is_alive:
+      return [self.sprite]
+    else:
+      return []
 
   BRAKE_MODIFIER = 0.98
   def brake(self):
@@ -322,62 +335,63 @@ class Player(object):
 
   # event methods
   def key_status(self, keystatus):
-    # brake 
-    if keystatus[sdl2.SDL_SCANCODE_S]:
-      self.brake()
-    else:
-      if keystatus[sdl2.SDL_SCANCODE_Q]:
-        self.body.apply_force_at_world_point((500, 0), self.body.position)
-      elif keystatus[sdl2.SDL_SCANCODE_E]:
-        self.body.apply_force_at_world_point((-500, 0), self.body.position)
-
-      if keystatus[sdl2.SDL_SCANCODE_W] and keystatus[sdl2.SDL_SCANCODE_X]:
-        self.move_up   = False
-        self.move_down = False
-        self.forward_force = 0
-      elif keystatus[sdl2.SDL_SCANCODE_W]:
-        # self.y -= 1
-        # self.accelerate()
-        # self.body.velocity.y = min(self.body.velocity.y, 2)
-        # x, y = self.body.position
-        # self.body.position = Vec2d(x, y - 5)
-        self.move_up   = True
-        self.move_down = False
-        self.forward_force = 10
-      elif keystatus[sdl2.SDL_SCANCODE_X]:
-        self.move_up   = False
-        self.move_down = True
-        # self.move_backward()
-        self.forward_force = -3
+    if self.is_alive:
+      # brake 
+      if keystatus[sdl2.SDL_SCANCODE_S]:
+        self.brake()
       else:
-        self.move_up   = False
-        self.move_down = False
-        self.forward_force = 0
+        if keystatus[sdl2.SDL_SCANCODE_Q]:
+          self.body.apply_force_at_world_point((500, 0), self.body.position)
+        elif keystatus[sdl2.SDL_SCANCODE_E]:
+          self.body.apply_force_at_world_point((-500, 0), self.body.position)
 
-    if keystatus[sdl2.SDL_SCANCODE_D] and keystatus[sdl2.SDL_SCANCODE_A]:
-      self.move_left  = False
-      self.move_right = False
-      # self.top_x_force    = 0
-      # self.bottom_x_force = 0
-    elif keystatus[sdl2.SDL_SCANCODE_D]:
-      # self.rotate_clockwise()
-      self.move_left  = False
-      self.move_right = True
-      # self.top_x_force    =  50
-      # self.bottom_x_force = -50
-      # self.x += 1
-    elif keystatus[sdl2.SDL_SCANCODE_A]:
-      # self.rotate_counterclockwise()
-      self.move_left  = True
-      self.move_right = False
-      # self.x -= 1
-      # self.top_x_force    = -50
-      # self.bottom_x_force =  50
-    else:
-      self.move_left  = False
-      self.move_right = False
-      # self.top_x_force    = 0
-      # self.bottom_x_force = 0
+        if keystatus[sdl2.SDL_SCANCODE_W] and keystatus[sdl2.SDL_SCANCODE_X]:
+          self.move_up   = False
+          self.move_down = False
+          self.forward_force = 0
+        elif keystatus[sdl2.SDL_SCANCODE_W]:
+          # self.y -= 1
+          # self.accelerate()
+          # self.body.velocity.y = min(self.body.velocity.y, 2)
+          # x, y = self.body.position
+          # self.body.position = Vec2d(x, y - 5)
+          self.move_up   = True
+          self.move_down = False
+          self.forward_force = 10
+        elif keystatus[sdl2.SDL_SCANCODE_X]:
+          self.move_up   = False
+          self.move_down = True
+          # self.move_backward()
+          self.forward_force = -3
+        else:
+          self.move_up   = False
+          self.move_down = False
+          self.forward_force = 0
+
+      if keystatus[sdl2.SDL_SCANCODE_D] and keystatus[sdl2.SDL_SCANCODE_A]:
+        self.move_left  = False
+        self.move_right = False
+        # self.top_x_force    = 0
+        # self.bottom_x_force = 0
+      elif keystatus[sdl2.SDL_SCANCODE_D]:
+        # self.rotate_clockwise()
+        self.move_left  = False
+        self.move_right = True
+        # self.top_x_force    =  50
+        # self.bottom_x_force = -50
+        # self.x += 1
+      elif keystatus[sdl2.SDL_SCANCODE_A]:
+        # self.rotate_counterclockwise()
+        self.move_left  = True
+        self.move_right = False
+        # self.x -= 1
+        # self.top_x_force    = -50
+        # self.bottom_x_force =  50
+      else:
+        self.move_left  = False
+        self.move_right = False
+        # self.top_x_force    = 0
+        # self.bottom_x_force = 0
 
   def on_key_press(self, event, sym, mod):
     pass

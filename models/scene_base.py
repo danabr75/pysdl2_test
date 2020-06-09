@@ -13,6 +13,7 @@ import pymunk
 # http://www.pymunk.org/en/latest/pymunk.vec2d.html
 # http://www.pymunk.org/en/latest/examples.html
 from pymunk.vec2d import Vec2d
+from models.body import Body
 import math
 
 class SceneBase(sdl2.ext.World):
@@ -108,16 +109,39 @@ class SceneBase(sdl2.ext.World):
         shape.friction = 1
         # self.print_options = self.pymunk.SpaceDebugDrawOptions()
         self.collider = self.space.add_collision_handler(COLLISION_SHIP_LEVEL, COLLISION_SHIP_LEVEL)
-        self.collider.begin = self.collision_detection
+        self.collider.begin = SceneBase.ship_collision_detection
+        self.collider.separate = SceneBase.post_collision
 
     # /Users/primary_user/projects/pygame/pysdl2_test/models/scene_base.py:109:
     #   UserWarning: Function 'test' should return a bool to indicate if the collision should
     #   be processed or not when used as 'begin' or 'pre_solve' collision callback.
     # Can be factored out to it's own class.
-    def collision_detection(self, space, arbiter, data):
-        print("test")
+    # http://www.pymunk.org/en/latest/_modules/pymunk/arbiter.html
+    def ship_collision_detection(space, arbiter, data):
+        print("COLLISION!!!")
+        print(data)
+        print(arbiter)
+        print(space)
+        print("TEST")
+        print(arbiter._get_shapes())
         return True
  
+    def post_collision(arbiter, space, data):
+        print("post_collision!!!!!")
+        # print(arbiter.shapes)
+        print(data)
+        # print(arbiter)
+        # print(space)
+        collided_shape = arbiter.shapes[0] 
+        collided_body = collided_shape.body
+        collided_object = collided_body.custom_object
+        print("HIT OBJECT")
+        print(collided_object)
+        # collided_shape.body.take_damage(100)
+        # if collided_shape:
+        #     space.remove(collided_shape, collided_shape.body)
+
+
     def add_box2(self, space, posX, posY):
         global screen
         self.size= 30
@@ -141,7 +165,7 @@ class SceneBase(sdl2.ext.World):
 
     # https://pymunk-tutorial.readthedocs.io/en/latest/joint/joint.html
     # https://github.com/viblo/pymunk/blob/8a7809a2428cd705e3d9582d776fdf0ca037538a/examples/tank.py#L38
-    def add_poly(self, map_x, map_y, w, h, mass, collision_type):
+    def add_poly(self, map_x, map_y, w, h, mass, collision_type, custom_object=None):
         # radius = Vec2d(w, h).length
         
         # NEEDS TO BE: [(-w/2,-h/2), (w/2,-h/2), (w/2,h/2), (-w/2,h/2)]
@@ -156,12 +180,18 @@ class SceneBase(sdl2.ext.World):
         # body = self.pymunk.Body(mass, moment)
         # pymunk.Body.update_velocity(body, (0,0), 0, 1)
         # body = self.pymunk.Body(1, 10)
-        body = self.pymunk.Body(1, 10)
+        body = Body(1, 10, pymunk.Body.DYNAMIC, custom_object)
+        # print("GOT BODY")
+        # print(custom_object)
+        # print("SET BODY")
+        # print(body.custom_object)
         body.velocity_func = self.limit_velocity
         body.position = Vec2d(map_x, map_y)
+        # print("GOT POSITION HERE")
+        # print(body.position)
 
-        print("NEW SHAPE HERE")
-        print(points)
+        # print("NEW SHAPE HERE")
+        # print(points)
         # http://www.pymunk.org/en/latest/_modules/pymunk/shapes.html
         shape = self.pymunk.Poly(body, points)
         # Pymunk uses the Coulomb friction model, a value of 0.0 is frictionless.
@@ -501,6 +531,11 @@ class SceneBase(sdl2.ext.World):
         ]
 
     def get_x_and_y_pos_from_camera(self, map_x, map_y):
+        # print('get_x_and_y_pos_from_camera')
+        # print(self.camera.map_x)
+        # print(self.camera.map_y)
+        # print(map_x)
+        # print(map_y)
         return [
             int(map_x - self.camera.map_x + SCREEN_WIDTH  / 2),
             int(map_y - self.camera.map_y + SCREEN_HEIGHT / 2)
