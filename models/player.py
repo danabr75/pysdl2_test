@@ -59,9 +59,10 @@ class Player(object):
     self.momentum_angles = {}
 
     # self.body = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
+    print("PLAYER BOX")
     self.shape = self.scene.add_box(map_x, map_y, self.w, self.h, self.MASS, COLLISION_SHIP_LEVEL)
     self.body = self.shape.body
-    self.y_force = 0
+    self.forward_force = 0
     self.top_x_force = 0
     self.bottom_x_force = 0
 
@@ -194,10 +195,10 @@ class Player(object):
     # print("X FORCE")
     # print([self.top_x_force, self.bottom_x_force])
 
-    if self.y_force != 0:
+    if self.forward_force != 0:
       base_speed = 10
       # step = (math.pi/180 * (self.body.angle - 90))
-      step = (math.pi/180 * ((self.body.angle  % 360) - 90 ))
+      step = (math.pi/180 * ((self.body.angle % 360) - 90 ))
       new_map_x = round(math.cos(step) * base_speed + self.body.position[0])
       new_map_y = round(math.sin(step) * base_speed + self.body.position[1])
       diff_x =  self.body.position[0] - new_map_x
@@ -218,7 +219,7 @@ class Player(object):
 
       print("AND GOT FORCE: ")
       print(force)
-      force = force * 10
+      force = force * self.forward_force
       # print("AND GOT FORCE * 10: ")
       # print(force)
       # print("FORCE HERE")
@@ -304,14 +305,14 @@ class Player(object):
       self.brake()
     else:
       if keystatus[sdl2.SDL_SCANCODE_Q]:
-        self.body.apply_force_at_local_point((500, 0), (0, 0))
+        self.body.apply_force_at_world_point((500, 0), self.body.position)
       elif keystatus[sdl2.SDL_SCANCODE_E]:
-        self.body.apply_force_at_local_point((-500, 0), (0, 0))
+        self.body.apply_force_at_world_point((-500, 0), self.body.position)
 
       if keystatus[sdl2.SDL_SCANCODE_W] and keystatus[sdl2.SDL_SCANCODE_X]:
         self.move_up   = False
         self.move_down = False
-        self.y_force = 0
+        self.forward_force = 0
       elif keystatus[sdl2.SDL_SCANCODE_W]:
         # self.y -= 1
         # self.accelerate()
@@ -320,16 +321,16 @@ class Player(object):
         # self.body.position = Vec2d(x, y - 5)
         self.move_up   = True
         self.move_down = False
-        self.y_force = -40
+        self.forward_force = 10
       elif keystatus[sdl2.SDL_SCANCODE_X]:
         self.move_up   = False
         self.move_down = True
         # self.move_backward()
-        self.y_force = 40
+        self.forward_force = -3
       else:
         self.move_up   = False
         self.move_down = False
-        self.y_force = 0
+        self.forward_force = 0
 
     if keystatus[sdl2.SDL_SCANCODE_D] and keystatus[sdl2.SDL_SCANCODE_A]:
       self.move_left  = False

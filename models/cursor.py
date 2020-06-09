@@ -84,8 +84,8 @@ class Cursor(object):
     # print(str([self.map_x, self.map_y]))
     self.body.position = Vec2d(self.map_x, self.map_y)
 
-    if self.x_force != 0:
-      self.scene.player.body.apply_force_at_local_point((self.x_force, 0), (self.map_x - self.scene.player.body.position[0], self.map_y - self.scene.player.body.position[1]))
+    # if self.x_force != 0:
+      # self.scene.player.body.apply_force_at_local_point((self.x_force, 0), (self.map_x - self.scene.player.body.position[0], self.map_y - self.scene.player.body.position[1]))
     # print("MOUSEE BODU  POSITION")
     # print(str(self.body.position))
 

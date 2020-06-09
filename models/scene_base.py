@@ -13,6 +13,7 @@ import pymunk
 # http://www.pymunk.org/en/latest/pymunk.vec2d.html
 # http://www.pymunk.org/en/latest/examples.html
 from pymunk.vec2d import Vec2d
+import math
 
 class SceneBase(sdl2.ext.World):
     """Basic scene of the game.
@@ -143,7 +144,12 @@ class SceneBase(sdl2.ext.World):
     def add_box(self, map_x, map_y, w, h, mass, collision_type):
         # radius = Vec2d(w, h).length
         
-        points = [Vec2d(-w // 2, -h // 2), Vec2d(-w // 2, h // 2), Vec2d(w // 2, h // 2), Vec2d(w // 2, -h // 2)]
+        # NEEDS TO BE: [(-w/2,-h/2), (w/2,-h/2), (w/2,h/2), (-w/2,h/2)]
+        # points = [Vec2d(-w // 2, -h // 2), Vec2d(-w // 2, h // 2), Vec2d(w // 2, h // 2), Vec2d(w // 2, -h // 2)]
+        print("PLAYER W AND H")
+        print([w, h])
+        points = [Vec2d(-w // 2, -h // 2), Vec2d(w // 2, -h // 2), Vec2d(w // 2, h // 2), Vec2d(-w // 2, h // 2)]
+
         moment = self.pymunk.moment_for_poly(mass, points, (0,0))
         # http://www.pymunk.org/en/latest/pymunk.html
         # http://www.pymunk.org/en/latest/_modules/pymunk/body.html
@@ -153,7 +159,9 @@ class SceneBase(sdl2.ext.World):
         body.velocity_func = self.limit_velocity
         body.position = Vec2d(map_x, map_y)
 
-
+        print("NEW SHAPE HERE")
+        print(points)
+        # http://www.pymunk.org/en/latest/_modules/pymunk/shapes.html
         shape = self.pymunk.Poly(body, points)
         # Pymunk uses the Coulomb friction model, a value of 0.0 is frictionless.
         shape.friction = 1
@@ -195,6 +203,9 @@ class SceneBase(sdl2.ext.World):
     #     # return body
     #     return shape
 
+    def calc_angle_from_two_points(self, point1, point2):
+        return (180 / math.pi) * math.atan2(point1[1] - point2[1], point2[0] - point1[0])
+
     # http://www.pymunk.org/en/latest/overview.html
     def limit_velocity(self, body, gravity, damping, dt):
         max_velocity = 200
@@ -202,10 +213,23 @@ class SceneBase(sdl2.ext.World):
         l = body.velocity.length
         print("LIMIT PLAYER VELOCITY")
         print(l)
+        # X, Y Movement
         if l > max_velocity:
             scale = max_velocity / l
             body.velocity = body.velocity * scale
 
+        # current_vector_angle = self.calc_angle_from_two_points(body.position, body.velocity)
+        # current_vector_angle = self.calc_angle_from_two_points(body.velocity, body.position)
+        # print("current_vector_angle")
+        # print(current_vector_angle)
+        a = math.atan2(body.velocity[1], body.velocity[0]);
+        v = Vec2d(math.cos(a), math.sin(a))
+        print("TEXT HERE")
+        print(v)
+
+        print("OBJ ANGLE")
+        print(body.angle % 360)
+        # ANGLE
         l = body.angular_velocity
         max_angular_velocity = 10.0
         if l != 0.0:
