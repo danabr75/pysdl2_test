@@ -11,10 +11,11 @@ from pymunk.vec2d import Vec2d
 
 class Player(object):
 
-  MASS = 50
+  MASS = 10
 
-  def __init__(self, scene, map_tile_x = None, map_tile_y = None):
+  def __init__(self, scene, map_tile_x = None, map_tile_y = None, is_actual_player = False):
     self.scene = scene
+    self.is_actual_player = is_actual_player
 
     self.map_tile_x = map_tile_x or 100
     self.map_tile_y = map_tile_y or 100
@@ -60,7 +61,7 @@ class Player(object):
 
     # self.body = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
     print("PLAYER BOX")
-    self.shape = self.scene.add_box(map_x, map_y, self.w, self.h, self.MASS, COLLISION_SHIP_LEVEL)
+    self.shape = self.scene.add_poly(map_x, map_y, self.w, self.h, self.MASS, COLLISION_SHIP_LEVEL)
     self.body = self.shape.body
     self.forward_force = 0
     self.top_x_force = 0
@@ -185,13 +186,14 @@ class Player(object):
     return [self.map_tile_x, self.map_tile_y]
 
   def on_update(self):
-    print("body.velocity")
-    print(self.body.velocity)
-    print(self.body.velocity.length)
-    print("BODY ANGLE")
-    print(self.body.angle)
-    print("angular_velocity")
-    print(self.body.angular_velocity)
+    if self.is_actual_player:
+      print("body.velocity")
+      print(self.body.velocity)
+      print(self.body.velocity.length)
+      print("BODY ANGLE")
+      print(self.body.angle)
+      print("angular_velocity")
+      print(self.body.angular_velocity)
     # print("X FORCE")
     # print([self.top_x_force, self.bottom_x_force])
 
@@ -258,7 +260,9 @@ class Player(object):
 
       # self.body.apply_force_at_local_point((10, 0), (0, 30))
     else:
-      self.angle_brake()
+      # pass
+      if self.is_actual_player:
+        self.angle_brake()
 
 
     # http://www.pymunk.org/en/latest/overview.html
@@ -280,21 +284,39 @@ class Player(object):
     else:
       self.body.velocity = Vec2d(0.0, 0.0)
 
-  ANGLE_BRAKE_MODIFIER = 0.80
+  ANGLE_BRAKE_MODIFIER = 0.5
   def angle_brake(self):
-    print("BRAKE HERE")
-    l = self.body.angular_velocity
-    print(l)
-    if l > 0.01:
-      print("case 1")
-      # print(self.body.angular_velocity)
-      # self.body.angular_velocity = self.body.angular_velocity * self.ANGLE_BRAKE_MODIFIER
-      # print(self.body.angular_velocity)
-      # REDUCING WASN'T WORKING!
-      self.body.angular_velocity = 0.0
-    else:
-      print("case 2")
-      self.body.angular_velocity = 0.0
+    # if self.is_actual_player:
+    #   print("BRAKE HERE")
+    # l = self.body.angular_velocity
+    # print(l)
+    # if l > 0.05:
+    #   if self.is_actual_player:
+    #     print("case 1")
+    #     print(self.body.angular_velocity)
+    #   # self.body.angular_velocity = self.body.angular_velocity * self.ANGLE_BRAKE_MODIFIER
+    #   self.body._set_angular_velocity(self.body.angular_velocity * self.ANGLE_BRAKE_MODIFIER)
+    #   if self.is_actual_player:
+    #     print(self.body.angular_velocity)
+    #   # REDUCING WASN'T WORKING!
+    #   # self.body.angular_velocity = 0.0
+    #   self.body.apply_impulse_at_world_point((-9, 0), (self.body.position[0], self.body.position[1] + self.h_h))
+    # else:
+    #   if self.is_actual_player:
+    #     print("case 2")
+    #   self.body.angular_velocity = 0.0
+    #   # self.scene.pymunk.cpBodySetAngVel(self.body, 0.0)
+    if self.body.angular_velocity > 0:
+      self.body.apply_impulse_at_world_point(( 1, 0), (self.body.position[0], self.body.position[1] + self.h_h))
+      self.body.apply_impulse_at_world_point((-1, 0), (self.body.position[0], self.body.position[1] - self.h_h))
+      if self.body.angular_velocity < 0:
+        self.body.angular_velocity = 0.0
+    elif self.body.angular_velocity < 0:
+      self.body.apply_impulse_at_world_point((-1, 0), (self.body.position[0], self.body.position[1] + self.h_h))
+      self.body.apply_impulse_at_world_point(( 1, 0), (self.body.position[0], self.body.position[1] - self.h_h))
+      if self.body.angular_velocity > 0:
+        self.body.angular_velocity = 0.0
+
 
     # self.body.angular_velocity = 0
 

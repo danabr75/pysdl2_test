@@ -55,7 +55,7 @@ class SceneBase(sdl2.ext.World):
 
         # fname = RESOURCES.get_path("cursor.png")
         fname = RESOURCES.get_path("cursor.png")
-        player = Player(self)
+        player = Player(self, None, None, True)
         # For testing
         # self.player = player
 
@@ -141,7 +141,7 @@ class SceneBase(sdl2.ext.World):
 
     # https://pymunk-tutorial.readthedocs.io/en/latest/joint/joint.html
     # https://github.com/viblo/pymunk/blob/8a7809a2428cd705e3d9582d776fdf0ca037538a/examples/tank.py#L38
-    def add_box(self, map_x, map_y, w, h, mass, collision_type):
+    def add_poly(self, map_x, map_y, w, h, mass, collision_type):
         # radius = Vec2d(w, h).length
         
         # NEEDS TO BE: [(-w/2,-h/2), (w/2,-h/2), (w/2,h/2), (-w/2,h/2)]
@@ -150,11 +150,12 @@ class SceneBase(sdl2.ext.World):
         print([w, h])
         points = [Vec2d(-w // 2, -h // 2), Vec2d(w // 2, -h // 2), Vec2d(w // 2, h // 2), Vec2d(-w // 2, h // 2)]
 
-        moment = self.pymunk.moment_for_poly(mass, points, (0,0))
+        moment = self.pymunk.moment_for_poly(mass, points)
         # http://www.pymunk.org/en/latest/pymunk.html
         # http://www.pymunk.org/en/latest/_modules/pymunk/body.html
         # body = self.pymunk.Body(mass, moment)
         # pymunk.Body.update_velocity(body, (0,0), 0, 1)
+        # body = self.pymunk.Body(1, 10)
         body = self.pymunk.Body(1, 10)
         body.velocity_func = self.limit_velocity
         body.position = Vec2d(map_x, map_y)
@@ -163,6 +164,50 @@ class SceneBase(sdl2.ext.World):
         print(points)
         # http://www.pymunk.org/en/latest/_modules/pymunk/shapes.html
         shape = self.pymunk.Poly(body, points)
+        # Pymunk uses the Coulomb friction model, a value of 0.0 is frictionless.
+        shape.friction = 1
+        # A value of 0.0 gives no bounce, while a value of 1.0 will give a 'perfect' bounce.
+        shape.elasticity = 0.20
+        shape.collision_type = collision_type
+        shape.body = body
+
+        # print("SHAPTE")
+        # print(shape.bb)
+
+        self.space.add(body, shape)
+        
+        # return body
+        return shape
+
+    def add_box(self, map_x, map_y, w, h, mass, collision_type):
+        raise "don't use me right now"
+        # radius = Vec2d(w, h).length
+        
+        # NEEDS TO BE: [(-w/2,-h/2), (w/2,-h/2), (w/2,h/2), (-w/2,h/2)]
+        # points = [Vec2d(-w // 2, -h // 2), Vec2d(-w // 2, h // 2), Vec2d(w // 2, h // 2), Vec2d(w // 2, -h // 2)]
+        print("PLAYER W AND H")
+        print([w, h])
+        points = [Vec2d(-w // 2, -h // 2), Vec2d(w // 2, -h // 2), Vec2d(w // 2, h // 2), Vec2d(-w // 2, h // 2)]
+
+        # moment = self.pymunk.moment_for_poly(mass, points)
+        moment = self.pymunk.moment_for_box(mass, (w,h))
+        # http://www.pymunk.org/en/latest/pymunk.html
+        # http://www.pymunk.org/en/latest/_modules/pymunk/body.html
+        # body = self.pymunk.Body(mass, moment)
+        # pymunk.Body.update_velocity(body, (0,0), 0, 1)
+        # body = self.pymunk.Body(1, 10)
+        # body = self.pymunk.Body(mass, moment)
+        # body = self.pymunk.Body(mass, moment)
+        body = self.pymunk.Body(mass, 0.0)
+        body.velocity_func = self.limit_velocity
+        body.position = Vec2d(map_x, map_y)
+
+        print("NEW SHAPE HERE")
+        print(points)
+        # http://www.pymunk.org/en/latest/_modules/pymunk/shapes.html
+        # shape = self.pymunk.Poly(body, points)
+        # shape = self.pymunk.Poly.create_box(body, (w, h), 0.0)
+        shape = self.pymunk.Poly.create_box(body)
         # Pymunk uses the Coulomb friction model, a value of 0.0 is frictionless.
         shape.friction = 1
         # A value of 0.0 gives no bounce, while a value of 1.0 will give a 'perfect' bounce.
@@ -226,7 +271,6 @@ class SceneBase(sdl2.ext.World):
         v = Vec2d(math.cos(a), math.sin(a))
         print("TEXT HERE")
         print(v)
-
         print("OBJ ANGLE")
         print(body.angle % 360)
         # ANGLE
