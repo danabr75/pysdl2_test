@@ -326,11 +326,13 @@ class SceneBase(sdl2.ext.World):
         print(body.angle % 360)
         print("VELOCITY 2222")
         print(body.velocity)
-        max_velocity = 150
+        max_velocity = 200
         l = body.velocity.length
         if l > max_velocity:
             scale = max_velocity / l
             body.velocity = body.velocity * scale
+        if l < 0.0002:
+            body.velocity = Vec2d(0.0, 0.0)
 
         if self.is_angle_between_two_angles(directional_angle, body.angle - 15, body.angle + 15):
             # DO NOTHING
