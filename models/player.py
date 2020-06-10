@@ -201,6 +201,8 @@ class Player(object):
   def get_map_tile(self):
     return [self.map_tile_x, self.map_tile_y]
 
+  ANGLE_ROTATION_SPEED = 15
+
   def on_update(self):
     if self.is_actual_player:
       print("body.velocity")
@@ -262,12 +264,12 @@ class Player(object):
 
       # self.body.apply_force_at_local_point((self.bottom_x_force, 0), (0, self.h))
     if self.move_right:
-      self.body.apply_impulse_at_world_point((-9, 0), (self.body.position[0], self.body.position[1] + self.h_h))
-      self.body.apply_impulse_at_world_point((9, 0), (self.body.position[0], self.body.position[1] - self.h_h))
+      self.body.apply_impulse_at_world_point((-self.ANGLE_ROTATION_SPEED, 0), (self.body.position[0], self.body.position[1] + self.h_h))
+      self.body.apply_impulse_at_world_point((self.ANGLE_ROTATION_SPEED, 0), (self.body.position[0], self.body.position[1] - self.h_h))
     elif self.move_left:
       print("MOVE LEFT")
-      self.body.apply_impulse_at_world_point((9, 0), (self.body.position[0], self.body.position[1] + self.h_h))
-      self.body.apply_impulse_at_world_point((-9, 0), (self.body.position[0], self.body.position[1] - self.h_h))
+      self.body.apply_impulse_at_world_point((self.ANGLE_ROTATION_SPEED, 0), (self.body.position[0], self.body.position[1] + self.h_h))
+      self.body.apply_impulse_at_world_point((-self.ANGLE_ROTATION_SPEED, 0), (self.body.position[0], self.body.position[1] - self.h_h))
 
       # p0 = Vec2d(self.body.position)
       # p1 = from_pygame(event.pos, self.screen)
@@ -303,7 +305,7 @@ class Player(object):
     else:
       self.body.velocity = Vec2d(0.0, 0.0)
 
-  ANGLE_BRAKE_MODIFIER = 0.5
+  # ANGLE_BRAKE_MODIFIER = 0.5
   def angle_brake(self):
     # if self.is_actual_player:
     #   print("BRAKE HERE")
@@ -326,13 +328,13 @@ class Player(object):
     #   self.body.angular_velocity = 0.0
     #   # self.scene.pymunk.cpBodySetAngVel(self.body, 0.0)
     if self.body.angular_velocity > 0:
-      self.body.apply_impulse_at_world_point(( 1, 0), (self.body.position[0], self.body.position[1] + self.h_h))
-      self.body.apply_impulse_at_world_point((-1, 0), (self.body.position[0], self.body.position[1] - self.h_h))
+      self.body.apply_impulse_at_world_point(( self.ANGLE_ROTATION_SPEED * 3, 0), (self.body.position[0], self.body.position[1] + self.h_h))
+      self.body.apply_impulse_at_world_point((-self.ANGLE_ROTATION_SPEED * 3, 0), (self.body.position[0], self.body.position[1] - self.h_h))
       if self.body.angular_velocity < 0:
         self.body.angular_velocity = 0.0
     elif self.body.angular_velocity < 0:
-      self.body.apply_impulse_at_world_point((-1, 0), (self.body.position[0], self.body.position[1] + self.h_h))
-      self.body.apply_impulse_at_world_point(( 1, 0), (self.body.position[0], self.body.position[1] - self.h_h))
+      self.body.apply_impulse_at_world_point((-self.ANGLE_ROTATION_SPEED * 3, 0), (self.body.position[0], self.body.position[1] + self.h_h))
+      self.body.apply_impulse_at_world_point(( self.ANGLE_ROTATION_SPEED * 3, 0), (self.body.position[0], self.body.position[1] - self.h_h))
       if self.body.angular_velocity > 0:
         self.body.angular_velocity = 0.0
 
@@ -363,12 +365,12 @@ class Player(object):
           # self.body.position = Vec2d(x, y - 5)
           self.move_up   = True
           self.move_down = False
-          self.forward_force = 10
+          self.forward_force = 30
         elif keystatus[sdl2.SDL_SCANCODE_X]:
           self.move_up   = False
           self.move_down = True
           # self.move_backward()
-          self.forward_force = -3
+          self.forward_force = -9
         else:
           self.move_up   = False
           self.move_down = False

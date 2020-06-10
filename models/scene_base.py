@@ -286,6 +286,21 @@ class SceneBase(sdl2.ext.World):
             scale = max_velocity / l
             body.velocity = body.velocity * scale
 
+    def is_angle_between_two_angles(self, angle, min_angle, max_angle):
+        angle     = angle % 360
+        angle_min = min_angle % 360
+        angle_max = max_angle % 360
+
+        if (angle_min < angle_max):
+          return angle_min <= angle and angle <= angle_max
+        else:
+          return angle_min <= angle or angle <= angle_max
+
+    def angle_difference(self, angle1, angle2):
+        diff = ( angle2 - angle1 + 180 ) % 360 - 180
+        return diff + 360 if (diff < -180) else diff
+
+
     def limit_velocity_test(self, body, gravity, damping, dt):
         # print("TEXT HERE")
         # print(v)
@@ -309,26 +324,42 @@ class SceneBase(sdl2.ext.World):
         print(directional_angle)
         print("OBJECT ANGLE")
         print(body.angle % 360)
-        # if 
-        # 
+        print("VELOCITY 2222")
+        print(body.velocity)
+        max_velocity = 150
+        l = body.velocity.length
+        if l > max_velocity:
+            scale = max_velocity / l
+            body.velocity = body.velocity * scale
+
+        if self.is_angle_between_two_angles(directional_angle, body.angle - 15, body.angle + 15):
+            # DO NOTHING
+            # pass
+            print("WAS BETWEEN ANGLES")
+        else:
+            # SCALE should be built on objects mass.
+            scale = 30000
+            diff1 = abs(self.angle_difference(directional_angle, body.angle - 10))
+            diff2 = abs(self.angle_difference(directional_angle, body.angle + 10))
+            print("DIFF 1")
+            print(diff1)
+            print("DIFF 2")
+            print(diff2)
+            if diff1 < diff2:
+                # USE diff1
+                scale = ((scale - diff1) / scale)
+            else:
+                # USE diff2
+                scale = ((scale - diff2) / scale)
+            print("GOT SCALE")
+            print(scale)
+            body.velocity = body.velocity * scale
+
+
+        # if body.velocity.length < 0.05:
+        #   body.velocity = Vec2d(0.0, 0.0)
         pymunk.Body.update_velocity(body, gravity, damping, dt)
-# EAST ISH
-# directional_angle
-# -2.2800778666227304
-# OBJECT ANGLE
-# 87.73866245919254
 
-# NORTH
-# directional_angle
-# -90.0
-# OBJECT ANGLE
-# 0.0
-
-# WEST ISH
-# directional_angle
-# 178.8511285465066
-# OBJECT ANGLE
-# 267.6191711595084
 
     # http://www.pymunk.org/en/latest/overview.html
     def limit_velocity_with_angle(self, body, gravity, damping, dt):
