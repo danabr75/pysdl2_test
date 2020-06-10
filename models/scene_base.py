@@ -298,24 +298,37 @@ class SceneBase(sdl2.ext.World):
         print(body.angular_velocity)
         print(damping)
         print(dt)
+
+        radian = math.atan2(body.velocity[1], body.velocity[0]);
+        # WHAT IS V? The direction in X, Y that you're headed. NORTH: Vec2d(0, -1), SOUTH: Vec2d(0, 1), NORTH EAST: Vec2d(0.5, -0.5)
+        #   NOT NECESSARY THOUGH
+        # v = Vec2d(math.cos(radian), math.sin(radian))
+
+        directional_angle = (radian / (math.pi/180)) + 90
+        print("directional_angle")
+        print(directional_angle)
+        print("OBJECT ANGLE")
+        print(body.angle % 360)
+        # if 
+        # 
         pymunk.Body.update_velocity(body, gravity, damping, dt)
-        # 1.0
-        # 0.016667
-        # Counter clockwise
-        # limit_velocity_test
-        # -18.103161826260553
+# EAST ISH
+# directional_angle
+# -2.2800778666227304
+# OBJECT ANGLE
+# 87.73866245919254
 
-        # angular_velocity
-        # 19.204327387470645
+# NORTH
+# directional_angle
+# -90.0
+# OBJECT ANGLE
+# 0.0
 
-        # if l != 0.0:
-        #     if l > max_angular_velocity:
-        #         scale = max_angular_velocity / l
-        #         body.angular_velocity = body.angular_velocity * scale
-        #     elif l < max_angular_velocity:
-        #         scale = max_angular_velocity / l
-        #         body.angular_velocity = body.angular_velocity * scale    
-
+# WEST ISH
+# directional_angle
+# 178.8511285465066
+# OBJECT ANGLE
+# 267.6191711595084
 
     # http://www.pymunk.org/en/latest/overview.html
     def limit_velocity_with_angle(self, body, gravity, damping, dt):
