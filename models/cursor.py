@@ -28,9 +28,8 @@ class Cursor(object):
 
     self.map_x, self.map_y = self.scene.get_map_x_and_map_y_from_x_and_y(self)
     self.mass = 200
-    # self.body = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
-    self.shape = self.scene.add_poly(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
-    self.body = self.shape.body
+    # self.shape = self.scene.add_poly(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
+    # self.body = self.shape.body
     self.x_force = 0
 
   def on_mouse_drag(self, event, x, y, dx, dy, button):
@@ -79,7 +78,7 @@ class Cursor(object):
     self.map_x, self.map_y = self.scene.get_map_x_and_map_y_from_x_and_y(self)
     # print("self.scene.get_map_x_and_map_y_from_x_and_y")
     # print(str([self.map_x, self.map_y]))
-    self.body.position = Vec2d(self.map_x, self.map_y)
+    # self.body.position = Vec2d(self.map_x, self.map_y)
 
     # if self.x_force != 0:
       # self.scene.player.body.apply_force_at_local_point((self.x_force, 0), (self.map_x - self.scene.player.body.position[0], self.map_y - self.scene.player.body.position[1]))

@@ -4,6 +4,7 @@ from lib.constants import *
 
 from models.cursor import Cursor
 from models.player import Player
+from models.box import Box
 from models.camera_pov import CameraPOV
 from models.world import World
 from models.text import Text
@@ -76,8 +77,10 @@ class SceneBase(sdl2.ext.World):
 
         other_text_players = [Player(self, 99, 98), Player(self, 97, 98), Player(self, 97, 98)]
 
-        self.drawable_elements  = [player, cursor, self.background] + other_text_players
-        self.updatable_elements = [player, cursor, self.camera, self.background] + other_text_players
+        boxes = [Box(self, 99, 101), Box(self, 100, 102), Box(self, 100, 103)]
+
+        self.drawable_elements  = [player, cursor, self.background] + other_text_players + boxes
+        self.updatable_elements = [player, cursor, self.camera, self.background] + other_text_players + boxes
         self.key_listeners      = [player]
         self.mouse_listeners    = [cursor]
         self.occasional_updatable_elements = [player]
@@ -142,30 +145,30 @@ class SceneBase(sdl2.ext.World):
         #     space.remove(collided_shape, collided_shape.body)
 
 
-    def add_box2(self, space, posX, posY):
-        global screen
-        self.size= 30
-        self.points = [(-self.size, -self.size), (-self.size, self.size), (self.size,self.size), (self.size, -self.size)]
-        self.mass = 0.3
-        # Moment of inertia (MoI or sometimes just moment) of the body.
-        # The moment is like the rotational mass of a body.
-        self.moment = pm.moment_for_poly(self.mass, self.points, (0,0))
+    # def add_box2(self, space, posX, posY):
+    #     global screen
+    #     self.size= 30
+    #     self.points = [(-self.size, -self.size), (-self.size, self.size), (self.size,self.size), (self.size, -self.size)]
+    #     self.mass = 0.3
+    #     # Moment of inertia (MoI or sometimes just moment) of the body.
+    #     # The moment is like the rotational mass of a body.
+    #     self.moment = pm.moment_for_poly(self.mass, self.points, (0,0))
 
-        self.body = pm.Body(self.mass, self.moment)
-        self.body.position = Vec2d(posX, posY)
-        #print("Box a {0}".format(self.body.position))
-        self.rect.center = to_pygame(self.body.position)
-        #print("Box b {0}".format(self.rect))
-        self.shape = pm.Poly(self.body, self.points, (0,0))
-        self.shape.friction = 1
-        #self.shape.group = 1
+    #     self.body = pm.Body(self.mass, self.moment)
+    #     self.body.position = Vec2d(posX, posY)
+    #     #print("Box a {0}".format(self.body.position))
+    #     self.rect.center = to_pygame(self.body.position)
+    #     #print("Box b {0}".format(self.rect))
+    #     self.shape = pm.Poly(self.body, self.points, (0,0))
+    #     self.shape.friction = 1
+    #     #self.shape.group = 1
 
-        space.add(self.body, self.shape)
+    #     space.add(self.body, self.shape)
 
 
     # https://pymunk-tutorial.readthedocs.io/en/latest/joint/joint.html
     # https://github.com/viblo/pymunk/blob/8a7809a2428cd705e3d9582d776fdf0ca037538a/examples/tank.py#L38
-    def add_poly(self, map_x, map_y, w, h, mass, collision_type, custom_object=None):
+    def add_poly(self, map_x, map_y, w, h, mass, collision_type, custom_object=None, velocity_limiter=None):
         # radius = Vec2d(w, h).length
         
         # NEEDS TO BE: [(-w/2,-h/2), (w/2,-h/2), (w/2,h/2), (-w/2,h/2)]
@@ -185,7 +188,8 @@ class SceneBase(sdl2.ext.World):
         # print(custom_object)
         # print("SET BODY")
         # print(body.custom_object)
-        body.velocity_func = self.limit_velocity
+        if velocity_limiter:
+            body.velocity_func = velocity_limiter
         body.position = Vec2d(map_x, map_y)
         # print("GOT POSITION HERE")
         # print(body.position)
@@ -197,7 +201,7 @@ class SceneBase(sdl2.ext.World):
         # Pymunk uses the Coulomb friction model, a value of 0.0 is frictionless.
         shape.friction = 1
         # A value of 0.0 gives no bounce, while a value of 1.0 will give a 'perfect' bounce.
-        shape.elasticity = 0.20
+        shape.elasticity = 0.05
         shape.collision_type = collision_type
         shape.body = body
 
@@ -209,48 +213,27 @@ class SceneBase(sdl2.ext.World):
         # return body
         return shape
 
-    def add_box(self, map_x, map_y, w, h, mass, collision_type):
-        raise "don't use me right now"
-        # radius = Vec2d(w, h).length
-        
-        # NEEDS TO BE: [(-w/2,-h/2), (w/2,-h/2), (w/2,h/2), (-w/2,h/2)]
-        # points = [Vec2d(-w // 2, -h // 2), Vec2d(-w // 2, h // 2), Vec2d(w // 2, h // 2), Vec2d(w // 2, -h // 2)]
-        print("PLAYER W AND H")
-        print([w, h])
-        points = [Vec2d(-w // 2, -h // 2), Vec2d(w // 2, -h // 2), Vec2d(w // 2, h // 2), Vec2d(-w // 2, h // 2)]
-
-        # moment = self.pymunk.moment_for_poly(mass, points)
+    def add_box(self, map_x, map_y, w, h, mass, collision_type, custom_object=None, velocity_limiter=None):
         moment = self.pymunk.moment_for_box(mass, (w,h))
         # http://www.pymunk.org/en/latest/pymunk.html
         # http://www.pymunk.org/en/latest/_modules/pymunk/body.html
-        # body = self.pymunk.Body(mass, moment)
-        # pymunk.Body.update_velocity(body, (0,0), 0, 1)
-        # body = self.pymunk.Body(1, 10)
-        # body = self.pymunk.Body(mass, moment)
-        # body = self.pymunk.Body(mass, moment)
-        body = self.pymunk.Body(mass, 0.0)
+
+        # USE MOMENT?
+        body = Body(mass, moment, pymunk.Body.DYNAMIC, custom_object)
         body.velocity_func = self.limit_velocity
         body.position = Vec2d(map_x, map_y)
 
-        print("NEW SHAPE HERE")
-        print(points)
+        if velocity_limiter:
+            body.velocity_func = velocity_limiter
         # http://www.pymunk.org/en/latest/_modules/pymunk/shapes.html
-        # shape = self.pymunk.Poly(body, points)
-        # shape = self.pymunk.Poly.create_box(body, (w, h), 0.0)
-        shape = self.pymunk.Poly.create_box(body)
+        shape = self.pymunk.Poly.create_box(body, (w,h))
         # Pymunk uses the Coulomb friction model, a value of 0.0 is frictionless.
         shape.friction = 1
         # A value of 0.0 gives no bounce, while a value of 1.0 will give a 'perfect' bounce.
-        shape.elasticity = 0.20
+        shape.elasticity = 0.10
         shape.collision_type = collision_type
         shape.body = body
-
-        # print("SHAPTE")
-        # print(shape.bb)
-
         self.space.add(body, shape)
-        
-        # return body
         return shape
 
     # # https://github.com/viblo/pymunk/blob/8a7809a2428cd705e3d9582d776fdf0ca037538a/examples/tank.py#L38
@@ -281,8 +264,61 @@ class SceneBase(sdl2.ext.World):
     def calc_angle_from_two_points(self, point1, point2):
         return (180 / math.pi) * math.atan2(point1[1] - point2[1], point2[0] - point1[0])
 
+
+    # http://www.pymunk.org/en/latest/overview.html
+    def limit_velocity_and_no_angle(self, body, gravity, damping, dt):
+        max_velocity = 200
+        pymunk.Body.update_velocity(body, gravity, damping, dt)
+        l = body.velocity.length
+        # X, Y Movement
+        if l > max_velocity:
+            scale = max_velocity / l
+            body.velocity = body.velocity * scale
+        body.angular_velocity = 0
+
     # http://www.pymunk.org/en/latest/overview.html
     def limit_velocity(self, body, gravity, damping, dt):
+        max_velocity = 200
+        pymunk.Body.update_velocity(body, gravity, damping, dt)
+        l = body.velocity.length
+        # X, Y Movement
+        if l > max_velocity:
+            scale = max_velocity / l
+            body.velocity = body.velocity * scale
+
+    def limit_velocity_test(self, body, gravity, damping, dt):
+        # print("TEXT HERE")
+        # print(v)
+        # print("OBJ ANGLE")
+        # print(body.angle % 360)
+        # ANGLE
+        body.angular_velocity
+        max_angular_velocity = 10.0
+        print("limit_velocity_test")
+        print(body.angular_velocity)
+        print(damping)
+        print(dt)
+        pymunk.Body.update_velocity(body, gravity, damping, dt)
+        # 1.0
+        # 0.016667
+        # Counter clockwise
+        # limit_velocity_test
+        # -18.103161826260553
+
+        # angular_velocity
+        # 19.204327387470645
+
+        # if l != 0.0:
+        #     if l > max_angular_velocity:
+        #         scale = max_angular_velocity / l
+        #         body.angular_velocity = body.angular_velocity * scale
+        #     elif l < max_angular_velocity:
+        #         scale = max_angular_velocity / l
+        #         body.angular_velocity = body.angular_velocity * scale    
+
+
+    # http://www.pymunk.org/en/latest/overview.html
+    def limit_velocity_with_angle(self, body, gravity, damping, dt):
         max_velocity = 200
         pymunk.Body.update_velocity(body, gravity, damping, dt)
         l = body.velocity.length

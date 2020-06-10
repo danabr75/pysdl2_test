@@ -27,6 +27,7 @@ class Player(object):
     # self.y = None
     x, y = [ round(SCREEN_WIDTH // 2), round(SCREEN_HEIGHT // 2) ]
     # self.sprite = scene.factory.from_image(RESOURCES.get_path("test.png"))
+    # self.sprite = Sprite(scene, 'ship.png', x, y, Z_ORDER.Player)
     self.sprite = Sprite(scene, 'ship.png', x, y, Z_ORDER.Player)
     self.h = self.sprite.h
     self.w = self.sprite.w
@@ -61,7 +62,12 @@ class Player(object):
 
     # self.body = self.scene.add_box(self.map_x, self.map_y, self.w, self.h, self.mass, COLLISION_SHIP_LEVEL)
     print("PLAYER BOX")
-    self.shape = self.scene.add_poly(map_x, map_y, self.w, self.h, self.MASS, COLLISION_SHIP_LEVEL, self)
+    # self.shape = self.scene.add_poly(map_x, map_y, self.w, self.h, self.MASS, COLLISION_SHIP_LEVEL, self, self.scene.limit_velocity_with_angle)
+    if self.is_actual_player:
+      self.shape = self.scene.add_box(map_x, map_y, self.w, self.h, self.MASS, COLLISION_SHIP_LEVEL, self, self.scene.limit_velocity_test)
+    else:
+      self.shape = self.scene.add_box(map_x, map_y, self.w, self.h, self.MASS, COLLISION_SHIP_LEVEL, self)
+
     self.body = self.shape.body
     self.forward_force = 0
     self.top_x_force = 0

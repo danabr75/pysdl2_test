@@ -79,7 +79,7 @@ from lib.velocity import Velocity
 # from models.player import Player
 # from models.cursor import Cursor
 from lib.software_renderer import SoftwareRenderer
-from lib.movement_system import MovementSystem
+# from lib.movement_system import MovementSystem
 from lib.collision_system import CollisionSystem
 from lib.texture_renderer import TextureRenderer
 
