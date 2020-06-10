@@ -14,8 +14,9 @@ import pymunk
 # http://www.pymunk.org/en/latest/pymunk.vec2d.html
 # http://www.pymunk.org/en/latest/examples.html
 from pymunk.vec2d import Vec2d
-from models.body import Body
+from models.body import CustomBody
 import math
+import random
 
 class SceneBase(sdl2.ext.World):
     """Basic scene of the game.
@@ -78,6 +79,8 @@ class SceneBase(sdl2.ext.World):
         other_text_players = [Player(self, 99, 98), Player(self, 97, 98), Player(self, 97, 98)]
 
         boxes = [Box(self, 99, 101), Box(self, 100, 102), Box(self, 100, 103)]
+        for i in range(250):
+            boxes.append(Box(self, random.randrange(120), random.randrange(120)))
 
         self.drawable_elements  = [player, cursor, self.background] + other_text_players + boxes
         self.updatable_elements = [player, cursor, self.camera, self.background] + other_text_players + boxes
@@ -91,22 +94,22 @@ class SceneBase(sdl2.ext.World):
         self.draw_text = False
 
         # EDGES OF MAP
-        shape = self.pymunk.Segment(self.static_body, (1,1), (1,self.background.map_pixel_height), 1.0)
+        shape = self.pymunk.Segment(self.static_body, (1,1), (1, self.background.map_pixel_height), 1.0)
         self.space.add(shape)
         shape.elasticity = 1
         shape.friction = 1
 
-        shape = self.pymunk.Segment(self.static_body, (self.background.map_pixel_width  ,1), (self.background.map_pixel_width  ,self.background.map_pixel_height), 1.0)
+        shape = self.pymunk.Segment(self.static_body, (self.background.map_pixel_width, 1), (self.background.map_pixel_width  ,self.background.map_pixel_height), 1.0)
         self.space.add(shape)
         shape.elasticity = 1
         shape.friction = 1
         
-        shape = self.pymunk.Segment(self.static_body, (1,1), (self.background.map_pixel_width  ,1), 1.0)
+        shape = self.pymunk.Segment(self.static_body, (1,1), (self.background.map_pixel_width, 1), 1.0)
         self.space.add(shape)
         shape.elasticity = 1
         shape.friction = 1
         
-        shape = self.pymunk.Segment(self.static_body, (1,self.background.map_pixel_height), (self.background.map_pixel_width,self.background.map_pixel_height), 1.0)
+        shape = self.pymunk.Segment(self.static_body, (1, self.background.map_pixel_height), (self.background.map_pixel_width,self.background.map_pixel_height), 1.0)
         self.space.add(shape)
         shape.elasticity = 1
         shape.friction = 1
@@ -137,9 +140,16 @@ class SceneBase(sdl2.ext.World):
         # print(space)
         collided_shape = arbiter.shapes[0] 
         collided_body = collided_shape.body
-        collided_object = collided_body.custom_object
-        print("HIT OBJECT")
-        print(collided_object)
+        print("collided_body")
+        print(type(collided_body).__name__)
+        print(collided_body)
+        # collided_body
+        # Body(Body.STATIC)
+        # if 
+        if type(collided_body).__name__ == 'CustomBody':
+            collided_object = collided_body.custom_object
+            print("HIT OBJECT")
+            print(collided_object)
         # collided_shape.body.take_damage(100)
         # if collided_shape:
         #     space.remove(collided_shape, collided_shape.body)
@@ -183,7 +193,7 @@ class SceneBase(sdl2.ext.World):
         # body = self.pymunk.Body(mass, moment)
         # pymunk.Body.update_velocity(body, (0,0), 0, 1)
         # body = self.pymunk.Body(1, 10)
-        body = Body(1, 10, pymunk.Body.DYNAMIC, custom_object)
+        body = CustomBody(1, 10, pymunk.Body.DYNAMIC, custom_object)
         # print("GOT BODY")
         # print(custom_object)
         # print("SET BODY")
@@ -219,7 +229,7 @@ class SceneBase(sdl2.ext.World):
         # http://www.pymunk.org/en/latest/_modules/pymunk/body.html
 
         # USE MOMENT?
-        body = Body(mass, moment, pymunk.Body.DYNAMIC, custom_object)
+        body = CustomBody(mass, moment, pymunk.Body.DYNAMIC, custom_object)
         body.velocity_func = self.limit_velocity
         body.position = Vec2d(map_x, map_y)
 
@@ -309,10 +319,10 @@ class SceneBase(sdl2.ext.World):
         # ANGLE
         body.angular_velocity
         max_angular_velocity = 10.0
-        print("limit_velocity_test")
-        print(body.angular_velocity)
-        print(damping)
-        print(dt)
+        # print("limit_velocity_test")
+        # print(body.angular_velocity)
+        # print(damping)
+        # print(dt)
 
         radian = math.atan2(body.velocity[1], body.velocity[0]);
         # WHAT IS V? The direction in X, Y that you're headed. NORTH: Vec2d(0, -1), SOUTH: Vec2d(0, 1), NORTH EAST: Vec2d(0.5, -0.5)
@@ -320,12 +330,12 @@ class SceneBase(sdl2.ext.World):
         # v = Vec2d(math.cos(radian), math.sin(radian))
 
         directional_angle = (radian / (math.pi/180)) + 90
-        print("directional_angle")
-        print(directional_angle)
-        print("OBJECT ANGLE")
-        print(body.angle % 360)
-        print("VELOCITY 2222")
-        print(body.velocity)
+        # print("directional_angle")
+        # print(directional_angle)
+        # print("OBJECT ANGLE")
+        # print(body.angle % 360)
+        # print("VELOCITY 2222")
+        # print(body.velocity)
         max_velocity = 200
         l = body.velocity.length
         if l > max_velocity:
@@ -334,28 +344,30 @@ class SceneBase(sdl2.ext.World):
         if l < 0.0002:
             body.velocity = Vec2d(0.0, 0.0)
 
-        if self.is_angle_between_two_angles(directional_angle, body.angle - 15, body.angle + 15):
-            # DO NOTHING
-            # pass
-            print("WAS BETWEEN ANGLES")
-        else:
-            # SCALE should be built on objects mass.
-            scale = 30000
-            diff1 = abs(self.angle_difference(directional_angle, body.angle - 10))
-            diff2 = abs(self.angle_difference(directional_angle, body.angle + 10))
-            print("DIFF 1")
-            print(diff1)
-            print("DIFF 2")
-            print(diff2)
-            if diff1 < diff2:
-                # USE diff1
-                scale = ((scale - diff1) / scale)
+        if l > 0.0:
+            if self.is_angle_between_two_angles(directional_angle, body.angle - 15, body.angle + 15):
+                # DO NOTHING
+                # pass
+                # print("WAS BETWEEN ANGLES")
+                pass
             else:
-                # USE diff2
-                scale = ((scale - diff2) / scale)
-            print("GOT SCALE")
-            print(scale)
-            body.velocity = body.velocity * scale
+                # SCALE should be built on objects mass.
+                scale = 30000
+                diff1 = abs(self.angle_difference(directional_angle, body.angle - 10))
+                diff2 = abs(self.angle_difference(directional_angle, body.angle + 10))
+                # print("DIFF 1")
+                # print(diff1)
+                # print("DIFF 2")
+                # print(diff2)
+                if diff1 < diff2:
+                    # USE diff1
+                    scale = ((scale - diff1) / scale)
+                else:
+                    # USE diff2
+                    scale = ((scale - diff2) / scale)
+                # print("GOT SCALE")
+                # print(scale)
+                body.velocity = body.velocity * scale
 
 
         # if body.velocity.length < 0.05:

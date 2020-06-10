@@ -28,10 +28,10 @@ class Box(object):
     self.body = self.shape.body
 
     x, y = self.scene.get_x_and_y_pos_from_camera(self.body.position[0], self.body.position[1])
-    print("BOX X AND Y")
-    print([x, y])
-    print("BOX POS")
-    print(self.body.position)
+    # print("BOX X AND Y")
+    # print([x, y])
+    # print("BOX POS")
+    # print(self.body.position)
     self.sprite.on_update(x, y, round(self.body.angle))
 
     self.forward_force = 0
@@ -55,9 +55,9 @@ class Box(object):
 
   def on_update(self):
     # http://www.pymunk.org/en/latest/overview.html
-    print("BOX ON UPDATE")
-    print(self.body)
-    print(self.body.position)
+    # print("BOX ON UPDATE")
+    # print(self.body)
+    # print(self.body.position)
     x, y = self.scene.get_x_and_y_pos_from_camera(self.body.position[0], self.body.position[1])
     self.sprite.on_update(x, y, round(self.body.angle))
 
