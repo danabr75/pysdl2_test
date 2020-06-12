@@ -2,8 +2,10 @@
 # pipenv install 
 # pipenv shell
 # python run.py
-
+import pyximport; pyximport.install()
 from manager import Manager
+# from manager cimport manager
+# Manager.install()
 from models.scene_base import SceneBase
 from models.rouge_like import RogueLike
 

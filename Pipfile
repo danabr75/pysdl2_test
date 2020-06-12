@@ -17,6 +17,10 @@ pyinstaller = "3.6"
 # python -m pip install pymunk
 pymunk = "5.6.0"
 
+# For one-time builds, e.g. for CI/testing, on platforms that are not covered by one of the wheel packages provided on PyPI, it is substantially faster than a full source build to install an uncompiled (slower) version of Cython with
+# pip install Cython --install-option="--no-cython-compile"
+# python -m pip install Cython
+Cython = "0.29.20"
 
 
 [dev-packages]
